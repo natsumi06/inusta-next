@@ -34,7 +34,9 @@ async function UserDetail({ params }: { params: { id: string } }) {
 
         <div className="pl-4">
           <p className="text-lg font-semibold text-black">{user.name}</p>
-          <p className="whitespace-pre-wrap font-medium">{user.description}</p>
+          <p className="whitespace-pre-wrap font-medium  text-black">
+            {user.description}
+          </p>
           <div className="mt-4 flex">
             <p className="text-sm font-semibold text-black">
               投稿{user.posts.length}件

@@ -27,7 +27,7 @@ export default async function Users() {
                     <p className="text-lg font-semibold text-black">
                       {user.name}
                     </p>
-                    <p className="whitespace-pre-wrap font-medium">
+                    <p className="whitespace-pre-wrap font-medium text-black">
                       {user.description}
                     </p>
                     <div className="mt-4 flex">

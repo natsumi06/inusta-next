@@ -18,7 +18,7 @@ async function Dashboard() {
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mt-8 flex bg-white p-4">
-        {user.image && (
+        {user.image ? (
           <Image
             className="block aspect-[1/1] size-24 rounded-full object-cover"
             src={user.image}
@@ -26,8 +26,9 @@ async function Dashboard() {
             height={96}
             alt="user icon"
           />
+        ) : (
+          <IconSkeleton />
         )}
-        {user.image || <IconSkeleton />}
         <div className="pl-4">
           <p className="text-lg font-semibold text-black">{user.name}</p>
           {user.description && (

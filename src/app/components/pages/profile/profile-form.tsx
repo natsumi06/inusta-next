@@ -1,3 +1,5 @@
+import { updateMe } from "./../../../../../lib/actions";
+
 export default function ProfileEditForm({
   user,
 }: {
@@ -9,7 +11,7 @@ export default function ProfileEditForm({
   };
 }) {
   return (
-    <form className="relative mt-6 space-y-6">
+    <form action={updateMe} className="relative mt-6 space-y-6">
       <div>
         <label
           className="block text-sm font-medium text-gray-700"
@@ -19,7 +21,7 @@ export default function ProfileEditForm({
         </label>
         <input
           defaultValue={user.name}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
           name="name"
           type="text"
           required
@@ -35,7 +37,7 @@ export default function ProfileEditForm({
         </label>
         <input
           defaultValue={user.email}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
           name="email"
           type="email"
           required
@@ -50,7 +52,7 @@ export default function ProfileEditForm({
           自己紹介
         </label>
         <textarea
-          className="text-gray-500 mt-1 w-full rounded border border-gray-300 p-2.5 focus:border-blue-500 focus:ring-blue-500"
+          className="text-gray-500 mt-1 w-full rounded border border-gray-300 p-2.5 focus:border-blue-500 focus:ring-blue-700"
           name="description"
           rows={6}
           defaultValue={user.description ?? ""}

@@ -131,3 +131,45 @@ export async function fetchMe() {
     throw new Error("Failed to fetch posts.");
   }
 }
+
+export async function fetchPostwithComments(id: string) {
+  try {
+    return await prisma.post.findFirstOrThrow({
+      where: { id },
+      select: {
+        id: true,
+        image: true,
+        caption: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            description: true,
+          },
+        },
+        comments: {
+          select: {
+            id: true,
+            text: true,
+            createdAt: true,
+            user: {
+              select: {
+                name: true,
+                image: true,
+                description: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch post.");
+  }
+}

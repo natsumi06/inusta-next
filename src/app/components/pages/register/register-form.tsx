@@ -1,8 +1,10 @@
+import { registerUser } from "./../../../../../lib/actions";
 import Link from "next/link";
 
 export default function RegisterForm() {
   return (
-    <form>
+    // TODO: 登録完了メッセージとエラーメッセージの表示を追加
+    <form action={registerUser}>
       <div>
         <label className="block text-sm font-medium text-gray-700">
           ユーザ名
@@ -10,7 +12,7 @@ export default function RegisterForm() {
         <input
           name="name"
           required
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500  text-gray-700"
         />
       </div>
       <div className="mt-4">
@@ -21,7 +23,7 @@ export default function RegisterForm() {
           name="email"
           type="email"
           required
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500  text-gray-700"
         />
       </div>
       <div className="mt-4">
@@ -33,7 +35,7 @@ export default function RegisterForm() {
           name="password"
           required
           minLength={8}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
         />
       </div>
       <div className="mt-4">
@@ -45,7 +47,7 @@ export default function RegisterForm() {
           name="passwordConfirmation"
           required
           minLength={8}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
         />
       </div>
       <div className="mt-8 flex items-center justify-end">

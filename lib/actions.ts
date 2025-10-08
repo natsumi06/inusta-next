@@ -1,21 +1,16 @@
-// lib/actions.ts
 "use server";
 import { z } from "zod";
+import { signIn, signOut } from "./../auth";
+import { AuthError } from "next-auth";
 
 /**
- * Server Actions 統合版
+ * Server Actions
  * - registerUser: 会員登録（重複チェック・bcryptハッシュ）
  * - updatePost: 投稿編集（本人の投稿のみ）
  * - deletePost: 投稿削除（本人の投稿のみ）
  * - createComment: コメント作成（投稿存在チェック）
  * - updateMe: プロフィール編集（name/description/画像差し替え対応）
  * - createPost: 投稿作成（Vercel Blobへの画像アップロード込み）
- *
- * 注意:
- * - 認証未導入のため、一時的に email = "user+1@example.com" を使用。
- *   本番導入時は Auth.js などのセッションからユーザー情報を取得して置き換えてください。
- * - 画像アップロードには @vercel/blob を使用します。next.config.mjs の images.remotePatterns に Blob のホスト名を追加してください。
- * - .env.local に DB 接続文字列を設定し、キーやURLはコードに直書きしないでください。
  */
 
 import prisma from "./../lib/prisma";
@@ -23,7 +18,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
-import { error } from "console";
 
 const RegisterUserSchema = z
   .object({
@@ -232,7 +226,6 @@ export async function updateMe(formData: FormData) {
  * 投稿作成（画像アップロードあり）
  * 画像を Blob にアップ → 投稿保存 → ダッシュボード再検証 → ダッシュボードへ遷移
  */
-
 export async function createPost(formData: FormData) {
   console.log("createPost");
   const email = "user+1@example.com";
@@ -256,4 +249,35 @@ export async function createPost(formData: FormData) {
 
   revalidatePath("/dashboard");
   redirect("/dashboard");
+}
+
+/**
+ * 認証処理を行う関数
+ */
+export async function authenticate(
+  state: string | undefined,
+  formData: FormData
+) {
+  try {
+    await signIn("credentials", formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "メールアドレスまたはパスワードが正しくありません。";
+        default:
+          return "エラーが発生しました。";
+      }
+    }
+    throw error;
+  }
+}
+
+/**
+ * ログアウト処理を行う関数
+ * セッションを終了し、ログインページへリダイレクトする
+ */
+export async function logout() {
+  await signOut();
+  redirect("/login");
 }

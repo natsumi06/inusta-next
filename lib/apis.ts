@@ -1,7 +1,10 @@
 import prisma from "./prisma";
+import { auth } from "./../auth";
 
 export async function fetchDashboard() {
-  const email = "user+1@example.com";
+  const session = await auth();
+  if (!session?.user?.email) throw new Error("Invalid Request");
+  const email = session.user.email;
   try {
     return await prisma.user.findFirstOrThrow({
       where: { email },
@@ -115,7 +118,9 @@ export async function fetchUser(id: string) {
 }
 
 export async function fetchMe() {
-  const email = "user+1@example.com";
+  const session = await auth();
+  if (!session?.user?.email) throw new Error("Invalid Request");
+  const email = session.user.email;
   try {
     return await prisma.user.findFirstOrThrow({
       select: {

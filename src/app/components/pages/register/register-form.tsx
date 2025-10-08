@@ -1,18 +1,23 @@
 "use client";
 
+import Loader from "@/app/components/loaders/loader";
 import { registerUser } from "./../../../../../lib/actions";
 import Link from "next/link";
 import { useActionState } from "react";
+import clsx from "clsx";
 
 export default function RegisterForm() {
   const initialState = {
     errors: {},
     message: null,
   };
-  const [state, action] = useActionState(registerUser, initialState);
+  const [state, action, isPending] = useActionState(registerUser, initialState);
   return (
     // TODO: 登録完了メッセージとエラーメッセージの表示を追加
-    <form action={action}>
+    <form
+      action={action}
+      className={clsx("relative", { "opacity-20": isPending })}
+    >
       <div>
         <label className="block text-sm font-medium text-gray-700">
           ユーザ名
@@ -100,11 +105,13 @@ export default function RegisterForm() {
         </Link>
         <button
           type="submit"
+          disabled={isPending}
           className="ml-4 inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900"
         >
           登録
         </button>
       </div>
+      {isPending && <Loader />}
     </form>
   );
 }

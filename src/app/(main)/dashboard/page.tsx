@@ -3,12 +3,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchDashboard } from "../../../../lib/apis";
 import IconSkeleton from "@/app/components/skeletons/icon-skeleton";
+import { Suspense } from "react";
+import UserSkeleton from "@/app/components/skeletons/user-skeleton";
 
 export default function Page() {
   return (
     <>
       <BreadCrumbs title="ダッシュボード 🐾" />
-      <Dashboard />
+      <Suspense fallback={<UserSkeleton />}>
+        <Dashboard />
+      </Suspense>
     </>
   );
 }

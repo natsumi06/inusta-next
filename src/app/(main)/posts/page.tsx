@@ -2,12 +2,16 @@ import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchLatestPosts } from "./../../../../lib/apis";
+import { Suspense } from "react";
+import PostsWithUserSkeleton from "@/app/components/skeletons/posts-with-user-skeleton";
 
 export default async function Page() {
   return (
     <>
       <BreadCrumbs title="新着投稿 🐾" />
-      <Posts />
+      <Suspense fallback={<PostsWithUserSkeleton />}>
+        <Posts />
+      </Suspense>
     </>
   );
 }

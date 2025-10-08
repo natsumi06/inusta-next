@@ -3,12 +3,16 @@ import IconSkeleton from "@/app/components/skeletons/icon-skeleton";
 import { fetchUser } from "./../../../../../lib/apis";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
+import UserSkeleton from "@/app/components/skeletons/user-skeleton";
 
 export default function Page({ params }: { params: { id: string } }) {
   return (
     <>
       <BreadCrumbs title="オーナー 🐾" />
-      <UserDetail params={params} />
+      <Suspense fallback={<UserSkeleton />}>
+        <UserDetail params={params} />
+      </Suspense>
     </>
   );
 }

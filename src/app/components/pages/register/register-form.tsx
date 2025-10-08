@@ -1,10 +1,18 @@
+"use client";
+
 import { registerUser } from "./../../../../../lib/actions";
 import Link from "next/link";
+import { useActionState } from "react";
 
 export default function RegisterForm() {
+  const initialState = {
+    errors: {},
+    message: null,
+  };
+  const [state, action] = useActionState(registerUser, initialState);
   return (
     // TODO: 登録完了メッセージとエラーメッセージの表示を追加
-    <form action={registerUser}>
+    <form action={action}>
       <div>
         <label className="block text-sm font-medium text-gray-700">
           ユーザ名
@@ -12,8 +20,16 @@ export default function RegisterForm() {
         <input
           name="name"
           required
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500  text-gray-700"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
         />
+        <div>
+          {state.errors?.name &&
+            state.errors.name.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
       </div>
       <div className="mt-4">
         <label className="block text-sm font-medium text-gray-700">
@@ -23,8 +39,17 @@ export default function RegisterForm() {
           name="email"
           type="email"
           required
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500  text-gray-700"
+          aria-describedby="email-error"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
         />
+        <div>
+          {state.errors?.email &&
+            state.errors.email.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
       </div>
       <div className="mt-4">
         <label className="block text-sm font-medium text-gray-700">
@@ -37,6 +62,14 @@ export default function RegisterForm() {
           minLength={8}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
         />
+        <div>
+          {state.errors?.password &&
+            state.errors.password.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
       </div>
       <div className="mt-4">
         <label className="block text-sm font-medium text-gray-700">
@@ -49,6 +82,14 @@ export default function RegisterForm() {
           minLength={8}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
         />
+        <div>
+          {state.errors?.passwordConfirmation &&
+            state.errors.passwordConfirmation.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
       </div>
       <div className="mt-8 flex items-center justify-end">
         <Link

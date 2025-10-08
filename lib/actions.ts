@@ -1,5 +1,6 @@
 // lib/actions.ts
 "use server";
+import { z } from "zod";
 
 /**
  * Server Actions 統合版
@@ -24,46 +25,92 @@ import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
 import { error } from "console";
 
+const RegisterUserSchema = z
+  .object({
+    name: z.string().min(1, "ユーザ名は必須です。"),
+    email: z.string().email("メールアドレスの形式が正しくありません。"),
+    password: z.string().min(8, "パスワードは8文字以上で設定してください。"),
+    passwordConfirmation: z
+      .string()
+      .min(8, "確認用パスワードは8文字以上で設定してください。"),
+  })
+  .refine(
+    (args) => {
+      const { password, passwordConfirmation } = args;
+      return password === passwordConfirmation;
+    },
+    {
+      message: "パスワードと確認用パスワードが一致しません。",
+      path: ["passwordConfirmation"],
+    }
+  )
+  .refine(
+    async (args) => {
+      const { email } = args;
+      const user = await prisma.user.findFirst({ where: { email } });
+      return !user;
+    },
+    {
+      message: "このメールアドレスはすでに使われています。",
+      path: ["email"],
+    }
+  );
+
+type RegisterUserState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+    passwordConfirmation?: string[];
+  };
+  message?: string | null;
+};
+
 export async function action(formData: FormData) {
   console.log(formData.get("message"));
 }
+
 /**
  * 会員登録
  * 成功時: 戻り値なし（フォーム側で遷移やメッセージ制御）
  * 失敗時: 日本語エラーメッセージ文字列を返す
  */
-export async function registerUser(formData: FormData) {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const passwordConfirmation = formData.get("passwordConfirmation") as string;
+export async function registerUser(
+  _state: RegisterUserState,
+  formData: FormData
+): Promise<RegisterUserState> {
+  const validatedFields = await RegisterUserSchema.safeParseAsync({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    passwordConfirmation: formData.get("passwordConfirmation"),
+  });
 
-  if (!name || !email || !password || !passwordConfirmation) {
-    throw new Error("未入力の項目があります。");
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "ユーザー登録に失敗しました。",
+    };
   }
 
-  const exists = await prisma.user.findFirst({ where: { email } });
-  if (exists) {
-    throw new Error("このメールアドレスはすでに使われています。");
-  }
+  const { name, email, password } = validatedFields.data;
 
-  if (password !== passwordConfirmation) {
-    throw new Error("パスワードと確認用パスワードが一致しません。");
-  }
-
-  const hashed = await bcrypt.hash(password, 10);
-
+  const bcryptedPassword = await bcrypt.hash(password, 10);
   try {
     await prisma.user.create({
       data: {
         name,
         email,
-        password: hashed,
+        password: bcryptedPassword,
       },
     });
+    return {
+      errors: {},
+      message: "ユーザー登録に成功しました。",
+    };
   } catch (error) {
     console.error(error);
-    throw new Error("新規登録に失敗しました。");
+    throw new Error("ユーザー登録に失敗しました。");
   }
 }
 
@@ -194,8 +241,6 @@ export async function createPost(formData: FormData) {
   const blob = await put(imageFile.name, imageFile, {
     access: "public",
   });
-
-  console.log("⭐️ファイル", imageFile);
 
   const user = await prisma.user.findFirstOrThrow({
     where: { email },

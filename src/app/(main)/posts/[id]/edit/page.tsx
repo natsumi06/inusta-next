@@ -4,8 +4,13 @@ import Image from "next/image";
 import { fetchPost } from "./../../../../../../lib/apis";
 import Link from "next/link";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function Page({
+  params,
+}: {
+  params: { id: Promise<string> | string };
+}) {
+  const id = await params.id;
+
   const post = await fetchPost(id);
   const updatePostWithId = updatePost.bind(null, id);
   const deletePostWithId = deletePost.bind(null, id);

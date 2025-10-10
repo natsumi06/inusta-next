@@ -8,6 +8,7 @@ import { useActionState } from "react";
 
 export default function LoginForm() {
   const [error, action, isPending] = useActionState(authenticate, undefined);
+  console.log("⭐️", action);
   return (
     <form
       action={action}

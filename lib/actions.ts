@@ -117,7 +117,6 @@ export async function updatePost(id: string, formData: FormData) {
   // TODO: 不要
   const email = "user+1@example.com";
 
-  console.log("⭐️", id);
   if (!caption) {
     throw new Error("キャプションが未入力です。");
   }
@@ -126,7 +125,6 @@ export async function updatePost(id: string, formData: FormData) {
     where: { email },
   });
 
-  console.log("⭐️user.id", id);
   await prisma.post.update({
     where: { id, userId: user.id },
     data: { caption },

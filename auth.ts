@@ -4,9 +4,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import prisma from "./lib/prisma";
 import type { User } from "@prisma/client";
-import { NextResponse } from "next/server";
-
-const guestRoutes = ["/", "/login", "/register"];
+import { authConfig } from "./auth.config";
 
 async function getUser(email: string): Promise<User | null> {
   try {
@@ -18,13 +16,7 @@ async function getUser(email: string): Promise<User | null> {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  pages: { signIn: "/login" },
-  callbacks: {
-    authorized() {
-      console.log("⭐️⭐️authorized");
-      return true;
-    },
-  },
+  ...authConfig,
   providers: [
     credentials({
       name: "Credentials",
@@ -35,7 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             password: z.string().min(8),
           })
           .safeParse(credentials);
-        console.log("⭐️authorized");
+
         if (!parsed.success) return null;
         const { email, password } = parsed.data;
 

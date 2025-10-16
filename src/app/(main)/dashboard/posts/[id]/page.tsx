@@ -3,12 +3,13 @@ import { fetchPost } from "./../../../../../../lib/apis";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Page({
-  params,
-}: {
-  params: { id: Promise<string> | string };
-}) {
-  const id = await params.id;
+type PageProps = {
+  params: Promise<{ id: string }> | { id: string };
+};
+
+export default async function Page({ params }: PageProps) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
   const post = await fetchPost(id);
   return (
     <>

@@ -6,7 +6,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import UserSkeleton from "@/app/components/skeletons/user-skeleton";
 
-export default function Page({ params }: { params: { id: string } }) {
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default function Page({ params }: PageProps) {
   return (
     <>
       <BreadCrumbs title="オーナー 🐾" />
@@ -17,8 +21,8 @@ export default function Page({ params }: { params: { id: string } }) {
   );
 }
 
-async function UserDetail({ params }: { params: { id: string } }) {
-  const id = params.id;
+async function UserDetail({ params }: PageProps) {
+  const { id } = await params;
   const user = await fetchUser(id);
 
   return (

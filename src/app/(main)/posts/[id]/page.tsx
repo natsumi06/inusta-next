@@ -4,8 +4,12 @@ import Link from "next/link";
 import { fetchPostwithComments } from "./../../../../../lib/apis";
 import { createComment } from "./../../../../../lib/actions";
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const id = params.id;
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;
   const post = await fetchPostwithComments(id);
   const createCommentWithPostId = createComment.bind(null, id);
   return (

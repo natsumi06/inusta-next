@@ -4,12 +4,12 @@ import Image from "next/image";
 import { fetchPost } from "./../../../../../../lib/apis";
 import Link from "next/link";
 
-export default async function Page({
-  params,
-}: {
-  params: { id: Promise<string> | string };
-}) {
-  const id = await params.id;
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;
 
   const post = await fetchPost(id);
   const updatePostWithId = updatePost.bind(null, id);

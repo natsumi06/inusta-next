@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 type PageProps = {
-  params: Promise<{ id: string }> | { id: string };
+  params: { id: string };
 };
 
 export default async function Page({ params }: PageProps) {
-  const resolvedParams = await params;
-  const id = resolvedParams.id;
+  const id = params.id;
   const post = await fetchPost(id);
   return (
     <>

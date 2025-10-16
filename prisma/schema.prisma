@@ -1,3 +1,4 @@
+console.log("POSTGRES_PRISMA_URL:", process.env.POSTGRES_PRISMA_URL);
 generator client {
   provider = "prisma-client-js"
 }

@@ -1,11 +1,10 @@
-console.log("POSTGRES_PRISMA_URL:", process.env.POSTGRES_PRISMA_URL);
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
+  url       = env("DATABASE_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 

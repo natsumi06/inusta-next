@@ -6,43 +6,35 @@ import prisma from "./lib/prisma";
 import type { User } from "@prisma/client";
 import { authConfig } from "./auth.config";
 
-async function getUser(email: string): Promise<User | null> {
+async function getUser(email: string): Promise<User | undefined> {
   try {
-    return await prisma.user.findFirst({ where: { email } });
-  } catch (e) {
-    console.error("Failed to fetch user:", e);
-    return null;
+    return prisma.user.findFirstOrThrow({ where: { email } });
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    throw new Error("Failed to fetch user.");
   }
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     credentials({
-      name: "Credentials",
       async authorize(credentials) {
-        const parsed = z
+        const parsedCredentials = z
           .object({
             email: z.string().email(),
             password: z.string().min(8),
           })
           .safeParse(credentials);
-
-        if (!parsed.success) return null;
-        const { email, password } = parsed.data;
-
-        const user = await getUser(email);
-        if (!user || !user.password) return null;
-
-        const ok = await bcrypt.compare(password, user.password);
-        if (!ok) return null;
-
-        return {
-          id: user.id,
-          name: user.name ?? null,
-          email: user.email,
-          image: user.image ?? null,
-        };
+        if (parsedCredentials.success) {
+          const { email, password } = parsedCredentials.data;
+          const user = await getUser(email);
+          if (!user) return null;
+          const passwordsMatch = await bcrypt.compare(password, user.password);
+          if (passwordsMatch) return user;
+        }
+        console.log("Invalid credentials");
+        return null;
       },
     }),
   ],

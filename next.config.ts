@@ -5,8 +5,6 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-console.log("⭐️ANALYZE:", process.env.ANALYZE);
-
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [

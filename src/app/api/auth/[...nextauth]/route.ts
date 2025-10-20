@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { fetchMe } from "./../../../../../lib/apis";
 
-export async function GET(request: Request) {
-  return new NextResponse("hello world!");
+export async function GET() {
+  const me = await fetchMe();
+  return Response.json(me);
 }

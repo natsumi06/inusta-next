@@ -1,6 +1,6 @@
 "use server";
 import { z } from "zod";
-import { signIn, signOut } from "./../auth";
+import { signIn, signOut, auth } from "./../auth";
 import { AuthError } from "next-auth";
 
 /**
@@ -114,8 +114,8 @@ export async function registerUser(
  */
 export async function updatePost(id: string, formData: FormData) {
   const caption = formData.get("caption") as string;
-  // TODO: 不要
-  const email = "user+1@example.com";
+  const session = await auth();
+  const email = session?.user?.email || "";
 
   if (!caption) {
     throw new Error("キャプションが未入力です。");
@@ -139,7 +139,8 @@ export async function updatePost(id: string, formData: FormData) {
  * 削除後はダッシュボードを再検証してダッシュボードへ遷移
  */
 export async function deletePost(id: string, _formData: FormData) {
-  const email = "user+1@example.com";
+  const session = await auth();
+  const email = session?.user?.email || "";
 
   const user = await prisma.user.findFirstOrThrow({
     where: { email },
@@ -159,7 +160,8 @@ export async function deletePost(id: string, _formData: FormData) {
  */
 export async function createComment(postId: string, formData: FormData) {
   const text = formData.get("text") as string;
-  const email = "user+1@example.com";
+  const session = await auth();
+  const email = session?.user?.email || "";
 
   if (!text) {
     throw new Error("コメントが未入力です。");
@@ -192,7 +194,8 @@ export async function createComment(postId: string, formData: FormData) {
  * 更新後はダッシュボードを再検証してダッシュボードへ遷移
  */
 export async function updateMe(formData: FormData) {
-  const email = "user+1@example.com";
+  const session = await auth();
+  const email = session?.user?.email || "";
   const user = await prisma.user.findFirstOrThrow({
     where: { email },
   });
@@ -225,8 +228,8 @@ export async function updateMe(formData: FormData) {
  * 画像を Blob にアップ → 投稿保存 → ダッシュボード再検証 → ダッシュボードへ遷移
  */
 export async function createPost(formData: FormData) {
-  console.log("createPost");
-  const email = "user+1@example.com";
+  const session = await auth();
+  const email = session?.user?.email || "";
   const caption = formData.get("caption") as string;
   const imageFile = formData.get("image") as File;
   const blob = await put(imageFile.name, imageFile, {

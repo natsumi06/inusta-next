@@ -7,6 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   images: {
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       new URL("https://ssgbsuhzqhcrqfoe.public.blob.vercel-storage.com/**"),
     ],

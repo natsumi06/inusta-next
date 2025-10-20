@@ -210,6 +210,7 @@ export async function updateMe(formData: FormData) {
   if (imageFile.size > 0) {
     const blob = await put(imageFile.name, imageFile, {
       access: "public",
+      allowOverwrite: true,
     });
     data.image = blob.url;
   }

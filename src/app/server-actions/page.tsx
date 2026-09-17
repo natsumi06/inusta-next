@@ -1,7 +1,6 @@
 export default function Page() {
   async function action(formData: FormData) {
     "use server";
-    console.log(formData.get("message"));
   }
   return (
     <form action={action}>

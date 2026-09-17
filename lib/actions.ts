@@ -61,7 +61,7 @@ type RegisterUserState = {
 };
 
 export async function action(formData: FormData) {
-  console.log(formData.get("message"));
+  console.log("送信");
 }
 
 /**

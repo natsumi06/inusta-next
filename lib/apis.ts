@@ -28,7 +28,7 @@ export async function fetchDashboard() {
 
 export async function fetchLatestPosts() {
   try {
-    console.log(process.env.POSTGRES_PRISMA_URL);
+    console.log(process.env.DATABASE_URL);
     return await prisma.post.findMany({
       select: {
         id: true,

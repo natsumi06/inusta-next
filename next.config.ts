@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   images: {
     minimumCacheTTL: 2592000,
     remotePatterns: [
-      new URL("https://ssgbsuhzqhcrqfoe.public.blob.vercel-storage.com/**"),
+      new URL("https://tin8j995p60dzs6k.public.blob.vercel-storage.com/**"),
     ],
   },
   experimental: {

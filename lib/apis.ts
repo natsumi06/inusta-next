@@ -41,6 +41,9 @@ export async function fetchLatestPosts(skip = 0, take = 20) {
             image: true,
           },
         },
+        _count: {
+          select: { comments: true },
+        },
       },
       orderBy: { createdAt: "desc" },
       skip,

@@ -28,7 +28,7 @@ export default async function Page({ params }: PageProps) {
           />
           <div className="p-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">オーナー</h3>
+              <h3 className="font-semibold">ユーザー</h3>
               <div className="flex items-center gap-2">
                 {isOwner && (
                   <Link

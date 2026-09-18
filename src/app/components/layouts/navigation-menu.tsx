@@ -77,28 +77,10 @@ export default function NavigationMenu() {
           </Link>
         </div>
         <div className="py-1">
-          <Link
-            href="/posts/create"
-            className="block px-4 py-2 text-sm text-gray-700"
-          >
-            投稿作成
-          </Link>
-        </div>
-        <div className="py-1">
-          <Link href="/posts" className="block px-4 py-2 text-sm text-gray-700">
-            新着投稿
-          </Link>
-        </div>
-        <div className="py-1">
-          <Link href="/users" className="block px-4 py-2 text-sm text-gray-700">
-            オーナー
-          </Link>
-        </div>
-        <div className="py-1">
           <form action={logout}>
             <button
               type="submit"
-              className="block px-4 py-2 text-sm text-gray-700"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700"
             >
               ログアウト 🐾
             </button>

@@ -1,8 +1,9 @@
 import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
-import { deletePost, updatePost } from "./../../../../../../lib/actions";
+import { updatePost } from "./../../../../../../lib/actions";
 import Image from "next/image";
 import { fetchPost } from "./../../../../../../lib/apis";
 import Link from "next/link";
+import DeletePostButton from "@/app/components/pages/posts/delete-post-button";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -13,7 +14,6 @@ export default async function Page({ params }: PageProps) {
 
   const post = await fetchPost(id);
   const updatePostWithId = updatePost.bind(null, id);
-  const deletePostWithId = deletePost.bind(null, id);
   return (
     <>
       <BreadCrumbs title="投稿編集 🐾" />
@@ -72,14 +72,8 @@ export default async function Page({ params }: PageProps) {
                 </Link>
               </div>
             </form>
-            <form action={deletePostWithId}>
-              <button
-                type="submit"
-                className="mt-4 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25"
-              >
-                削除
-              </button>
-            </form>
+
+            <DeletePostButton postId={post.id} postImage={post.image} />
           </div>
         </div>
       </div>

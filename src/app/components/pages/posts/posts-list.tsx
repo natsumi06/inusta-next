@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { loadMorePosts } from "@/lib/actions";
+import { loadMorePosts } from "../../../../../lib/actions";
 import { useState } from "react";
 
 function getRelativeTime(date: Date | string): string {

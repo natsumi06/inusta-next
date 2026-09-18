@@ -1,6 +1,6 @@
 "use client";
 
-import { deletePost } from "@/lib/actions";
+import { deletePost } from "../../../../../lib/actions";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -19,7 +19,7 @@ export default function DeletePostButton({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await deletePost(postId);
+      await deletePost(postId, new FormData());
     } catch (error) {
       console.error("Delete failed:", error);
       setIsDeleting(false);

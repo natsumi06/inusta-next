@@ -24,7 +24,7 @@ export default function UsersList({ users }: UsersListProps) {
   const [sortBy, setSortBy] = useState<"recent" | "posts">("recent");
 
   const filteredUsers = useMemo(() => {
-    let result = users.filter((user) =>
+    const result = users.filter((user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 

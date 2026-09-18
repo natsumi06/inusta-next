@@ -1,7 +1,7 @@
 import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchPostwithComments } from "./../../../../../lib/apis";
+import { fetchPostwithComments, fetchMe } from "./../../../../../lib/apis";
 import { createComment } from "./../../../../../lib/actions";
 
 type PageProps = {
@@ -11,6 +11,8 @@ type PageProps = {
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
   const post = await fetchPostwithComments(id);
+  const currentUser = await fetchMe().catch(() => null);
+  const isOwner = currentUser && post.user.email === currentUser.email;
   const createCommentWithPostId = createComment.bind(null, id);
   return (
     <>
@@ -26,9 +28,19 @@ export default async function Page({ params }: PageProps) {
           />
           <div className="p-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">オーナー</h3>
-              <div className="text-xs text-gray-500">
-                公開日: {post.createdAt.toLocaleString("ja-JP")}
+              <h3 className="font-semibold">ユーザー</h3>
+              <div className="flex items-center gap-2">
+                {isOwner && (
+                  <Link
+                    href={`/posts/${id}/edit`}
+                    className="rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white hover:bg-blue-700"
+                  >
+                    編集
+                  </Link>
+                )}
+                <div className="text-xs text-gray-500">
+                  公開日: {post.createdAt.toLocaleString("ja-JP")}
+                </div>
               </div>
             </div>
             <Link href={`/users/${post.user.id}`}>

@@ -26,7 +26,7 @@ export async function fetchDashboard() {
   }
 }
 
-export async function fetchLatestPosts() {
+export async function fetchLatestPosts(skip = 0, take = 20) {
   try {
     return await prisma.post.findMany({
       select: {
@@ -41,12 +41,26 @@ export async function fetchLatestPosts() {
             image: true,
           },
         },
+        _count: {
+          select: { comments: true },
+        },
       },
       orderBy: { createdAt: "desc" },
+      skip,
+      take,
     });
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch posts");
+  }
+}
+
+export async function fetchPostsCount() {
+  try {
+    return await prisma.post.count();
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch posts count");
   }
 }
 
@@ -146,12 +160,14 @@ export async function fetchPostwithComments(id: string) {
         image: true,
         caption: true,
         createdAt: true,
+        userId: true,
         user: {
           select: {
             id: true,
             name: true,
             image: true,
             description: true,
+            email: true,
           },
         },
         comments: {

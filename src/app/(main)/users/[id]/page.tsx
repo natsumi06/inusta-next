@@ -53,21 +53,28 @@ async function UserDetail({ params }: PageProps) {
         </div>
       </div>
       <div className="my-8 bg-white">
-        <div className="grid grid-cols-3 gap-1">
-          {user.posts.map((post) => {
-            return (
-              <Link href={`/posts/${post.id}`} key={post.id}>
-                <Image
-                  className="aspect-[1/1] w-full object-cover"
-                  src={post.image}
-                  width={400}
-                  height={400}
-                  alt="user icon"
-                />
-              </Link>
-            );
-          })}
-        </div>
+        {user.posts.length > 0 ? (
+          <div className="grid grid-cols-3 gap-1">
+            {user.posts.map((post) => {
+              return (
+                <Link href={`/posts/${post.id}`} key={post.id}>
+                  <Image
+                    className="aspect-[1/1] w-full object-cover"
+                    src={post.image}
+                    width={400}
+                    height={400}
+                    alt="user icon"
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="py-16 px-4 text-center">
+            <p className="text-gray-500 text-lg">🐾</p>
+            <p className="text-gray-500">まだ投稿がありません</p>
+          </div>
+        )}
       </div>
     </div>
   );

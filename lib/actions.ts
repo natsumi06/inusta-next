@@ -283,3 +283,18 @@ export async function logout() {
   await signOut();
   redirect("/login");
 }
+
+/**
+ * 追加の投稿を読み込む（ページネーション用）
+ * @param offset スキップする件数
+ */
+export async function loadMorePosts(offset: number) {
+  try {
+    const { fetchLatestPosts } = await import("./apis");
+    const posts = await fetchLatestPosts(offset, 20);
+    return posts;
+  } catch (error) {
+    console.error("Failed to load more posts:", error);
+    throw new Error("投稿の読み込みに失敗しました");
+  }
+}

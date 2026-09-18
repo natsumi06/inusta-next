@@ -51,7 +51,7 @@ export default function Navigation() {
                   }
                 )}
               >
-                新規作成
+                投稿する
               </Link>
               <Link
                 href="/posts"
@@ -73,7 +73,7 @@ export default function Navigation() {
                   }
                 )}
               >
-                オーナー
+                ユーザーを探す
               </Link>
             </div>
           </div>

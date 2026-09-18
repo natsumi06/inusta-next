@@ -19,8 +19,8 @@ export default async function Page() {
 async function Posts() {
   const posts = await fetchLatestPosts();
   return (
-    <div className="mx-auto my-8 max-w-5xl bg-white">
-      <div className="grid grid-cols-3 gap-1">
+    <div className="mx-auto my-4 w-full bg-white px-4 sm:my-8 sm:max-w-5xl sm:px-0">
+      <div className="grid grid-cols-2 gap-1 sm:grid-cols-3">
         {posts.map((post) => {
           return (
             <Link key={post.id} href={`/posts/${post.id}`}>

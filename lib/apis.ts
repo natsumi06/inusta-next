@@ -157,12 +157,14 @@ export async function fetchPostwithComments(id: string) {
         image: true,
         caption: true,
         createdAt: true,
+        userId: true,
         user: {
           select: {
             id: true,
             name: true,
             image: true,
             description: true,
+            email: true,
           },
         },
         comments: {

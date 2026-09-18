@@ -63,15 +63,23 @@ async function Dashboard() {
       <div className="my-8 grid grid-cols-3 gap-1 bg-white">
         {user.posts.map((post) => {
           return (
-            <Link href={`/posts/${post.id}/edit`} key={post.id}>
-              <Image
-                className="aspect-[1/1] w-full object-cover"
-                src={post.image}
-                alt="post"
-                width={300}
-                height={300}
-              />
-            </Link>
+            <div key={post.id} className="relative group">
+              <Link href={`/posts/${post.id}`}>
+                <Image
+                  className="aspect-[1/1] w-full object-cover"
+                  src={post.image}
+                  alt="post"
+                  width={300}
+                  height={300}
+                />
+              </Link>
+              <Link
+                href={`/posts/${post.id}/edit`}
+                className="absolute right-2 top-2 hidden rounded-full bg-black/50 p-2 text-white hover:bg-black/70 group-hover:block"
+              >
+                ✎
+              </Link>
+            </div>
           );
         })}
       </div>

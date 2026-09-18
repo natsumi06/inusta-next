@@ -1,9 +1,8 @@
 import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
-import Image from "next/image";
-import Link from "next/link";
-import { fetchLatestPosts } from "./../../../../lib/apis";
+import { fetchLatestPosts, fetchPostsCount } from "./../../../../lib/apis";
 import { Suspense } from "react";
 import PostsWithUserSkeleton from "@/app/components/skeletons/posts-with-user-skeleton";
+import PostsList from "@/app/components/pages/posts/posts-list";
 
 export default async function Page() {
   return (
@@ -17,43 +16,11 @@ export default async function Page() {
 }
 
 async function Posts() {
-  const posts = await fetchLatestPosts();
+  const posts = await fetchLatestPosts(0, 20);
+  const totalCount = await fetchPostsCount();
+  const hasMore = (posts.length ?? 0) < totalCount;
+
   return (
-    <div className="mx-auto my-4 w-full bg-white px-4 sm:my-8 sm:max-w-5xl sm:px-0">
-      <div className="grid grid-cols-2 gap-1 sm:grid-cols-3">
-        {posts.map((post) => {
-          return (
-            <Link key={post.id} href={`/posts/${post.id}`}>
-              <Image
-                className="aspect-[1/1] w-full object-cover"
-                src={post.image}
-                alt="posts"
-                width={400}
-                height={400}
-              />
-              <div className="flex items-center justify-between border p-1">
-                <div className="flex items-center">
-                  {post.user.image && (
-                    <Image
-                      className="block aspect-square size-6 rounded-full object-cover"
-                      src={post.user.image}
-                      width={32}
-                      height={32}
-                      alt="user icon"
-                    />
-                  )}
-                  <p className="ml-2 text-sm font-semibold text-black">
-                    {post.user.name}
-                  </p>
-                </div>
-                <p className="hidden text-xs text-gray-500 md:block">
-                  {post.createdAt.toLocaleString("ja-JP")}
-                </p>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    </div>
+    <PostsList initialPosts={posts} hasMore={hasMore} totalCount={totalCount} />
   );
 }

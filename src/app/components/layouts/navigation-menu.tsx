@@ -19,10 +19,10 @@ export default function NavigationMenu() {
       .then((me) => setUser(me));
   }, [passName]);
   return (
-    <div className="relative inline-block sm:ms-6 sm:items-center">
+    <div className="relative inline-flex items-center sm:ms-6">
       <Link
         href="/dashboard"
-        className="group my-6 inline-flex items-center rounded-md border border-transparent bg-white px-5 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+        className="group inline-flex items-center rounded-md border border-transparent bg-white px-5 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
       >
         {user?.image && (
           <Image

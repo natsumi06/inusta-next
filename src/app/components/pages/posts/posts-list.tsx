@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { loadMorePosts } from "../../../../../lib/actions";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Loader from "../../loaders/loader";
 
 function getRelativeTime(date: Date | string): string {
   const now = new Date();
@@ -49,20 +50,42 @@ export default function PostsList({
 }: PostsListProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [isLoading, setIsLoading] = useState(false);
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef(false);
 
-  const handleLoadMore = async () => {
-    setIsLoading(true);
-    try {
-      const morePosts = await loadMorePosts(posts.length);
-      setPosts((prev) => [...prev, ...morePosts]);
-    } catch (error) {
-      console.error("Failed to load more posts:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const hasMoreContent = hasMore && posts.length < totalCount;
 
-  const hasMoreContent = posts.length < totalCount;
+  useEffect(() => {
+    const trigger = loadMoreTriggerRef.current;
+    if (!trigger || !hasMoreContent || isLoading) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !isLoadingRef.current) {
+        isLoadingRef.current = true;
+        setIsLoading(true);
+        loadMorePosts(posts.length)
+          .then((morePosts) => {
+            setPosts((prev) => {
+              const existingIds = new Set(prev.map((post) => post.id));
+              return [
+                ...prev,
+                ...morePosts.filter((post) => !existingIds.has(post.id)),
+              ];
+            });
+          })
+          .catch((error) => {
+            console.error("Failed to load more posts:", error);
+          })
+          .finally(() => {
+            isLoadingRef.current = false;
+            setIsLoading(false);
+          });
+      }
+    });
+
+    observer.observe(trigger);
+    return () => observer.disconnect();
+  }, [hasMoreContent, isLoading, posts.length]);
 
   return (
     <div className="mx-auto my-4 w-full bg-white px-4 sm:my-8 sm:max-w-5xl sm:px-0">
@@ -128,19 +151,16 @@ export default function PostsList({
           );
         })}
       </div>
-
       {hasMoreContent && (
-        <div className="mt-8 flex justify-center pb-8">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoading}
-            className="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {isLoading ? "読み込み中..." : "もっと見る"}
-          </button>
+        <div
+          ref={loadMoreTriggerRef}
+          className={`relative text-center text-gray-500 ${
+            isLoading ? "h-32" : "h-8"
+          }`}
+        >
+          {isLoading && <Loader />}
         </div>
       )}
-
       {!hasMoreContent && posts.length > 0 && (
         <div className="mt-8 text-center pb-8 text-gray-500">
           すべての投稿を表示しています

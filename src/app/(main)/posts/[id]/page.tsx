@@ -33,7 +33,7 @@ export default async function Page({ params }: PageProps) {
                 {isOwner && (
                   <Link
                     href={`/posts/${id}/edit`}
-                    className="rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white hover:bg-blue-700"
+                    className="rounded-md bg-white px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-gray-100 border border-gray-600"
                   >
                     編集
                   </Link>

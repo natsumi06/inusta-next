@@ -57,7 +57,7 @@ async function Dashboard() {
                 href="/profile"
                 className="ml-2 rounded border px-2 text-sm font-semibold text-black hover:bg-gray-50"
               >
-                プロフィール編集
+                プロフィールを編集
               </Link>
             </div>
           </div>
@@ -70,18 +70,10 @@ async function Dashboard() {
           <div className="absolute right-0 z-10 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
             <div className="py-1">
               <Link
-                href="/dashboard"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              >
-                マイページ
-              </Link>
-            </div>
-            <div className="py-1">
-              <Link
                 href="/profile"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
               >
-                プロフィール
+                プロフィールを編集
               </Link>
             </div>
             <div className="py-1">

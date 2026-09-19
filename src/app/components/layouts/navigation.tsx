@@ -21,26 +21,15 @@ export default function Navigation() {
 
             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
               <Link
-                href="/dashboard"
+                href="/posts"
                 className={clsx(
                   "inline-flex items-center border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
                   {
-                    "border-b": pathname === "/dashboard",
+                    "border-b": pathname === "/posts",
                   }
                 )}
               >
-                ダッシュボード
-              </Link>
-              <Link
-                href="/profile"
-                className={clsx(
-                  "inline-flex items-center border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
-                  {
-                    "border-b": pathname === "/profile",
-                  }
-                )}
-              >
-                プロフィール
+                ホーム
               </Link>
               <Link
                 href="/posts/create"
@@ -54,17 +43,6 @@ export default function Navigation() {
                 投稿する
               </Link>
               <Link
-                href="/posts"
-                className={clsx(
-                  "inline-flex items-center border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
-                  {
-                    "border-b": pathname === "/posts",
-                  }
-                )}
-              >
-                新着投稿
-              </Link>
-              <Link
                 href="/users"
                 className={clsx(
                   "inline-flex items-center border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
@@ -73,7 +51,7 @@ export default function Navigation() {
                   }
                 )}
               >
-                ユーザーを探す
+                ユーザー
               </Link>
             </div>
           </div>

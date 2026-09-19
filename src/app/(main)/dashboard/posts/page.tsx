@@ -6,7 +6,7 @@ import { fetchLatestPosts } from "./../../../../../lib/apis";
 export default async function Page() {
   return (
     <>
-      <BreadCrumbs title="新着投稿 🐾" />
+      <BreadCrumbs title="ホーム 🐾" />
       <Posts />
     </>
   );

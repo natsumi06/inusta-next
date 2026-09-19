@@ -28,18 +28,12 @@ export default function DeletePostButton({
 
   return (
     <>
-      <div className="mt-8 rounded-lg border-2 border-red-200 bg-red-50 p-4">
-        <h3 className="font-semibold text-red-900">危険ゾーン</h3>
-        <p className="mt-2 text-sm text-red-800">
-          この投稿を削除します。この操作は取り消せません。
-        </p>
         <button
           onClick={() => setIsOpen(true)}
           className="mt-4 inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-800"
         >
           投稿を削除
         </button>
-      </div>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

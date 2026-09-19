@@ -74,15 +74,27 @@ export default function PostsList({
               : post.caption
             : "";
           return (
-            <Link key={post.id} href={`/posts/${post.id}`}>
-              <Image
-                className="aspect-[1/1] w-full object-cover"
-                src={post.image}
-                alt="posts"
-                width={400}
-                height={400}
-              />
-              <div className="border p-1">
+            <div key={post.id} className="relative group overflow-hidden">
+              <Link href={`/posts/${post.id}`}>
+                <Image
+                  className="aspect-[1/1] w-full object-cover transition duration-200 group-hover:brightness-110 group-hover:contrast-90"
+                  src={post.image}
+                  alt="posts"
+                  width={400}
+                  height={400}
+                />
+              </Link>
+
+              <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+              <Link
+                href={`/posts/${post.id}/edit`}
+                className="absolute right-2 top-1 hidden rounded-full p-1 group-hover:block"
+              >
+                🐾
+              </Link>
+
+              <Link href={`/posts/${post.id}`} className="block">
+                <div className="border p-1">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center">
                     {post.user.image && (
@@ -110,8 +122,9 @@ export default function PostsList({
                 <p className="text-xs text-gray-500">
                   💬 {post._count.comments}
                 </p>
-              </div>
-            </Link>
+                </div>
+              </Link>
+            </div>
           );
         })}
       </div>

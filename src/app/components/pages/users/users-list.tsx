@@ -37,7 +37,7 @@ export default function UsersList({ users }: UsersListProps) {
 
   return (
     <div className="mx-auto my-8 max-w-5xl">
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
+      <div className="mb-1 bg-white p-4 rounded-lg shadow-sm">
         <input
           type="text"
           placeholder="ユーザー名で検索..."

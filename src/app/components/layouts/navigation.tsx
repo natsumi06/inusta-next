@@ -23,13 +23,13 @@ export default function Navigation() {
               <Link
                 href="/posts"
                 className={clsx(
-                  "group inline-flex flex-col items-center border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
+                  "group inline-flex flex-col items-center border-gray-600 px-1 pb-1.5 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
                   {
                     "border-b": pathname === "/posts",
                   }
                 )}
               >
-                <span className="relative block size-[35px]">
+                <span className="relative block size-[40px]">
                   <Image
                     src="/icon/home/normal.svg"
                     fill
@@ -43,18 +43,20 @@ export default function Navigation() {
                     alt="home"
                   />
                 </span>
-                <p className="text-xs">ホーム</p>
+                <p className="pointer-events-none max-h-0 overflow-hidden text-xs opacity-0 transition-all duration-400 ease-out group-hover:max-h-6 group-hover:opacity-100">
+                  ホーム
+                </p>
               </Link>
               <Link
                 href="/posts/create"
                 className={clsx(
-                  "inline-flex items-center flex-col border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
+                  "group inline-flex items-center flex-col border-gray-600 px-1 pb-1.5 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
                   {
                     "border-b": pathname === "/posts/create",
                   }
                 )}
               >
-                <span className="relative block size-[35px]">
+                <span className="relative block size-[40px]">
                 <Image
                     src="/icon/post/normal.svg"
                     fill
@@ -68,18 +70,20 @@ export default function Navigation() {
                     alt="post"
                   />
                   </span>
-                <p className="text-xs">投稿</p>
+                <p className="pointer-events-none max-h-0 overflow-hidden text-xs opacity-0 transition-all duration-400 ease-out group-hover:max-h-6 group-hover:opacity-100">
+                  投稿する
+                </p>
               </Link>
               <Link
                 href="/users"
                 className={clsx(
-                  "inline-flex items-center flex-col border-gray-600 px-1 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
+                  "group inline-flex items-center flex-col border-gray-600 px-1 pb-1.5 pt-1 text-sm font-medium text-gray-900 focus:border-gray-900",
                   {
                     "border-b": pathname === "/users",
                   }
                 )}
               >
-                <span className="relative block size-[35px]">
+                <span className="relative block size-[40px]">
                   <Image
                     src="/icon/users/normal.svg"
                     fill
@@ -93,7 +97,9 @@ export default function Navigation() {
                     alt="user"
                   />
                 </span>
-                <p className="text-xs">ユーザー</p>
+                <p className="pointer-events-none max-h-0 overflow-hidden text-xs opacity-0 transition-all duration-400 ease-out group-hover:max-h-6 group-hover:opacity-100">
+                  ユーザー
+                </p>
               </Link>
             </div>
           </div>

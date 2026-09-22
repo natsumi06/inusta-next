@@ -2,7 +2,7 @@
 
 import { createPost } from "./../../../../../lib/actions";
 import Image from "next/image";
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useRef, useState, FormEvent, ChangeEvent } from "react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -12,6 +12,7 @@ export default function PostsCreateForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -47,7 +48,8 @@ export default function PostsCreateForm() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    if (!formData.get("image")) {
+    const imageFile = formData.get("image");
+    if (!(imageFile instanceof File) || imageFile.size === 0) {
       setError("画像を選択してください");
       return;
     }
@@ -67,10 +69,22 @@ export default function PostsCreateForm() {
   const handleRemoveImage = () => {
     setPreview(null);
     setFileName(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 bg-white p-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="hidden"
+        name="image"
+        disabled={isLoading}
+      />
       {!preview ? (
         <div>
           <label className="mb-4 block text-sm font-medium text-gray-700">
@@ -93,28 +107,14 @@ export default function PostsCreateForm() {
                   />
                 </svg>
               </div>
-              <label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                  name="image"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.currentTarget.parentElement?.querySelector<HTMLInputElement>(
-                      'input[type="file"]'
-                    )?.click();
-                  }}
-                  disabled={isLoading}
-                  className="rounded-full bg-gray-800 px-6 py-2 font-medium text-white hover:bg-gray-700 disabled:bg-gray-400"
-                >
-                  ファイルを選択
-                </button>
-              </label>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="rounded-full bg-gray-800 px-6 py-2 font-medium text-white hover:bg-gray-700 disabled:bg-gray-400"
+              >
+                ファイルを選択
+              </button>
               <p className="text-xs text-gray-500">
                 JPEG・PNG・WebP・GIF
               </p>
@@ -156,28 +156,14 @@ export default function PostsCreateForm() {
               )}
             </div>
             <div className="flex gap-3">
-              <label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                  name="image"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.currentTarget.parentElement?.querySelector<HTMLInputElement>(
-                      'input[type="file"]'
-                    )?.click();
-                  }}
-                  disabled={isLoading}
-                  className="rounded px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:text-gray-400"
-                >
-                  変更
-                </button>
-              </label>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="rounded px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:text-gray-400"
+              >
+                変更
+              </button>
               <button
                 type="button"
                 onClick={handleRemoveImage}

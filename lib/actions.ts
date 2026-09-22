@@ -19,6 +19,14 @@ import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
+
 const RegisterUserSchema = z
   .object({
     name: z.string().min(1, "ユーザ名は必須です。"),
@@ -236,7 +244,20 @@ export async function createPost(formData: FormData) {
   const session = await auth();
   const email = session?.user?.email || "";
   const caption = formData.get("caption") as string;
-  const imageFile = formData.get("image") as File;
+  const imageFile = formData.get("image");
+
+  if (!(imageFile instanceof File) || imageFile.size === 0) {
+    throw new Error("画像を選択してください");
+  }
+
+  if (!ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
+    throw new Error("対応する形式：JPEG, PNG, WebP, GIF");
+  }
+
+  if (imageFile.size > MAX_IMAGE_SIZE) {
+    throw new Error("ファイルサイズは5MB以下にしてください");
+  }
+
   const blob = await put(imageFile.name, imageFile, {
     access: "public",
   });

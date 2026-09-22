@@ -235,6 +235,7 @@ export async function createPost(formData: FormData) {
   const imageFile = formData.get("image") as File;
   const blob = await put(imageFile.name, imageFile, {
     access: "public",
+    allowOverwrite: true,
   });
 
   const user = await prisma.user.findFirstOrThrow({

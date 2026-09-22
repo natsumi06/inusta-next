@@ -105,7 +105,7 @@ export default function PostsCreateForm() {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.currentTarget.parentElement?.querySelector(
+                    e.currentTarget.parentElement?.querySelector<HTMLInputElement>(
                       'input[type="file"]'
                     )?.click();
                   }}
@@ -168,7 +168,7 @@ export default function PostsCreateForm() {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.currentTarget.parentElement?.querySelector(
+                    e.currentTarget.parentElement?.querySelector<HTMLInputElement>(
                       'input[type="file"]'
                     )?.click();
                   }}

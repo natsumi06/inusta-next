@@ -50,7 +50,7 @@ export default function UsersList({ users }: UsersListProps) {
             onClick={() => setSortBy("recent")}
             className={`px-4 py-2 rounded-md text-sm font-medium ${
               sortBy === "recent"
-                ? "bg-blue-600 text-white"
+                ? "bg-gray-700 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
@@ -60,7 +60,7 @@ export default function UsersList({ users }: UsersListProps) {
             onClick={() => setSortBy("posts")}
             className={`px-4 py-2 rounded-md text-sm font-medium ${
               sortBy === "posts"
-                ? "bg-blue-600 text-white"
+                ? "bg-gray-700 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >

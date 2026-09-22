@@ -22,11 +22,11 @@ async function Dashboard() {
   const user = await fetchDashboard();
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mt-8 flex items-start justify-between bg-white p-4">
-        <div className="flex">
+      <div className="relative mt-8 flex items-start bg-white p-5 sm:p-6">
+        <div className="flex min-w-0 gap-3 sm:gap-4">
           {user.image ? (
             <Image
-              className="block aspect-[1/1] size-24 rounded-full object-cover"
+              className="block size-20 shrink-0 rounded-full object-cover sm:size-24"
               src={user.image}
               width={96}
               height={96}
@@ -35,27 +35,61 @@ async function Dashboard() {
           ) : (
             <IconSkeleton />
           )}
-          <div className="pl-4">
-            <p className="text-lg font-semibold text-black">{user.name}</p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-3">
+              <p className="truncate text-lg font-semibold text-black">
+                {user.name}
+              </p>
+              <details className="relative shrink-0">
+                <summary className="list-none cursor-pointer rounded p-1 hover:bg-gray-50">
+                  <Image
+                    src="/icon/setting/normal.svg"
+                    width={20}
+                    height={21}
+                    alt="設定"
+                  />
+                </summary>
+                <div className="absolute left-0 z-10 mt-2 w-52 origin-top-left divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
+                  <div className="py-1">
+                    <Link
+                      href="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      プロフィールを編集
+                    </Link>
+                  </div>
+                  <div className="py-1">
+                    <form action={logout}>
+                      <button
+                        type="submit"
+                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        ログアウト 🐾
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </details>
+            </div>
             {user.description && (
-              <p className="whitespace-pre-wrap font-medium text-black">
+              <p className="mt-2 whitespace-pre-wrap font-medium text-black">
                 {user.description}
               </p>
             )}
             {!!user.description || (
-              <p className="whitespace-pre-wrap text-sm opacity-20 text-black">
-                🐾🐾🐾 「プロフィールを編集」から
+              <p className="mt-2 whitespace-pre-wrap text-sm text-black opacity-20">
+                「プロフィールを編集」から
                 <br />
-                自己紹介を入力しましょう 🐾🐾🐾
+                自己紹介を入力しましょう 
               </p>
             )}
-            <div className="mt-4 flex gap-2">
-              <p className="text-sm font-semibold text-black">
+            <div className="mt-5 flex items-center gap-3">
+              <p className="whitespace-nowrap text-sm font-semibold text-black">
                 投稿{user.posts.length}件
               </p>
               <Link
                 href="/profile"
-                className="ml-2 rounded border px-2 text-sm font-semibold text-black hover:bg-gray-50"
+                className="whitespace-nowrap rounded border px-2 py-1 text-sm font-semibold text-black hover:bg-gray-50"
               >
                 プロフィールを編集
               </Link>
@@ -63,31 +97,6 @@ async function Dashboard() {
           </div>
         </div>
 
-        <details className="relative">
-          <summary className="list-none cursor-pointer rounded border px-3 py-1.5 text-sm font-semibold text-black hover:bg-gray-50">
-            設定
-          </summary>
-          <div className="absolute right-0 z-10 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
-            <div className="py-1">
-              <Link
-                href="/profile"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              >
-                プロフィールを編集
-              </Link>
-            </div>
-            <div className="py-1">
-              <form action={logout}>
-                <button
-                  type="submit"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-                >
-                  ログアウト 🐾
-                </button>
-              </form>
-            </div>
-          </div>
-        </details>
       </div>
       <div className="my-8 bg-white">
         {user.posts.length > 0 ? (

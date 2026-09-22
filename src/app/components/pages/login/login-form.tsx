@@ -13,6 +13,9 @@ export default function LoginForm() {
       action={action}
       className={clsx("relative", { "opacity-20": isPending })}
     >
+      <h1 className="mb-6 text-center text-xl font-semibold text-gray-800">
+        ログイン
+      </h1>
       {error && <p className="mb-4 text-xs text-red-500">{error}</p>}
       <div>
         <label className="block text-sm font-medium text-gray-700">

@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 :root {
+  --font-size-body: 1rem;
+  --font-size-meta: 0.81rem;
+  --font-size-section-title: clamp(1.125rem, 1.8vw, 1.5rem);
+  --font-size-page-title: clamp(1.5rem, 2.5vw, 2.25rem);
+  --line-height-body: 1.7;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -15,6 +20,8 @@
 }
 
 body {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
@@ -22,6 +29,21 @@ body {
       rgb(var(--background-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.type-page-title {
+  font-size: var(--font-size-page-title);
+  line-height: 1.25;
+}
+
+.type-section-title {
+  font-size: var(--font-size-section-title);
+  line-height: 1.4;
+}
+
+.type-meta {
+  font-size: var(--font-size-meta);
+  line-height: 1.5;
 }
 
 @layer utilities {

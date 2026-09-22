@@ -13,11 +13,13 @@ export default function RegisterForm() {
   };
   const [state, action, isPending] = useActionState(registerUser, initialState);
   return (
-    // TODO: 登録完了メッセージとエラーメッセージの表示を追加
     <form
       action={action}
       className={clsx("relative", { "opacity-20": isPending })}
     >
+      <h1 className="mb-6 text-center text-xl font-semibold text-gray-800">
+        新規会員登録
+      </h1>
       <div>
         <label className="block text-sm font-medium text-gray-700">
           ユーザ名

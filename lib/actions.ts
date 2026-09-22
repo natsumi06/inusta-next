@@ -98,14 +98,18 @@ export async function registerUser(
         password: bcryptedPassword,
       },
     });
-    return {
-      errors: {},
-      message: "ユーザー登録に成功しました。",
-    };
   } catch (error) {
     console.error(error);
     throw new Error("ユーザー登録に失敗しました。");
   }
+
+  await signIn("credentials", {
+    email,
+    password,
+    redirectTo: "/register/complete",
+  });
+
+  redirect("/register/complete");
 }
 
 /**

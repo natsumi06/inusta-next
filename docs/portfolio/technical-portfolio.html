@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>inusta Technical Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root {
+    --ink: #1c2233;
+    --sub: #5b6477;
+    --mute: #8a93a6;
+    --line: #dfe3ea;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --navy: #1f2a44;
+    --accent: #e07a2f;
+    --accent-soft: #fdf0e5;
+    --blue: #2f6fe0;
+    --blue-soft: #e8f0fd;
+    --green: #1f9d6b;
+    --green-soft: #e4f5ee;
+    --red: #d64545;
+    --red-soft: #fcebeb;
+    --violet: #7a4fd6;
+    --violet-soft: #f0eafc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; }
+  body {
+    font-family: "Noto Sans JP", "IPAGothic", sans-serif;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 1280px; height: 720px;
+    position: relative; overflow: hidden;
+    padding: 44px 56px 40px;
+    page-break-after: always; break-after: page;
+    background: #fff;
+  }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  .kicker {
+    font-size: 12px; font-weight: 700; letter-spacing: .14em;
+    color: var(--accent); text-transform: uppercase;
+  }
+  h1.title { font-size: 32px; font-weight: 900; line-height: 1.3; margin-top: 2px; letter-spacing: .01em; }
+  .lead { color: var(--sub); font-size: 16px; margin-top: 6px; }
+  .foot {
+    position: absolute; left: 56px; right: 56px; bottom: 18px;
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--mute);
+  }
+  .foot b { color: var(--sub); font-weight: 500; }
+  .body { margin-top: 24px; }
+  .fill { height: 480px; }
+
+  .grid { display: grid; gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .muted { color: var(--sub); }
+  .small { font-size: 14.5px; }
+  .xs { font-size: 13px; }
+  .tag {
+    display: inline-block; font-size: 11.5px; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px; line-height: 1.6;
+    background: var(--blue-soft); color: var(--blue);
+  }
+  .tag.o { background: var(--accent-soft); color: var(--accent); }
+  .tag.g { background: var(--green-soft); color: var(--green); }
+  .tag.r { background: var(--red-soft); color: var(--red); }
+  .tag.v { background: var(--violet-soft); color: var(--violet); }
+  ul.dots { list-style: none; }
+  ul.dots li { position: relative; padding-left: 16px; margin: 3px 0; }
+  ul.dots li::before { content: ""; position: absolute; left: 2px; top: .7em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  table.t th { text-align: left; font-size: 12px; color: var(--sub); font-weight: 700; padding: 7px 10px; border-bottom: 2px solid var(--ink); }
+  table.t td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.t td:first-child { font-weight: 700; white-space: nowrap; }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: .9em; }
+  .shot { border-radius: 8px; border: 1px solid var(--line); overflow: hidden; background: #fff; box-shadow: 0 6px 18px rgba(28,34,51,.08); }
+  .shot img { display: block; width: 100%; }
+  .shot.crop img { height: 250px; object-fit: cover; object-position: top center; }
+  .cap { font-size: 14px; font-weight: 700; margin-top: 6px; color: var(--ink); }
+  .cap span { font-weight: 400; color: var(--sub); margin-left: 6px; }
+  svg text { font-family: "Noto Sans JP", "IPAGothic", sans-serif; }
+  .num { font-weight: 900; font-size: 13px; color: #fff; background: var(--accent); width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; flex: none; }
+  .row3 { display: grid; grid-template-columns: 64px 1fr; gap: 6px 10px; font-size: 15px; }
+  .row3 .k { font-size: 11.5px; font-weight: 700; color: var(--sub); padding-top: 2px; }
+  .codebox { background: #1c2233; color: #e6e9f0; border-radius: 8px; padding: 10px 14px; font-family: "JetBrains Mono", monospace; font-size: 12px; line-height: 1.6; white-space: pre; }
+  .codebox .c { color: #8a93a6; }
+  .codebox .h { color: #ffb37a; }
+</style>
+</head>
+<body>
+
+<!-- ============ 1. COVER ============ -->
+<section class="page" style="padding:0; background: var(--navy); color:#fff;">
+  <div style="position:absolute; inset:0; display:grid; grid-template-columns: 560px 1fr;">
+    <div style="padding: 64px 0 56px 64px; display:flex; flex-direction:column;">
+      <div class="kicker" style="color:#ffb37a;">Technical Portfolio</div>
+      <div style="font-size: 44px; font-weight: 900; line-height: 1.2; margin-top: 14px; letter-spacing:.005em;">Next.js<br>Full-stack<br>Engineering Portfolio</div>
+      <div style="margin-top: 22px; font-size: 18px; font-weight: 700;">inusta — 犬の飼い主のための写真共有SNS</div>
+      <p style="margin-top: 18px; font-size: 15px; line-height: 1.8; color: #c9d0de; max-width: 440px;">
+        フロントエンドとバックエンドの経験を生かし、要件整理から認証・データ設計・デプロイまで一貫して実装します。
+      </p>
+      <div style="margin-top:auto;">
+        <div style="font-size: 22px; font-weight: 700; letter-spacing:.06em;">［氏名］</div>
+        <div style="margin-top: 10px; font-size: 13px; color:#c9d0de; line-height: 1.9;">
+          <div>GitHub&nbsp;&nbsp;<span class="mono" style="color:#fff;">github.com/natsumi06/inusta-next</span></div>
+          <div>Demo&nbsp;&nbsp;&nbsp;&nbsp;<span class="mono" style="color:#fff;">inusta-next-delta.vercel.app</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="position:relative;">
+      <div style="position:absolute; left: 20px; top: 70px; width: 700px; transform: rotate(-3deg);" class="shot"><img src="../images/posts.jpg" alt=""></div>
+      <div style="position:absolute; left: 150px; top: 330px; width: 560px; transform: rotate(2deg);" class="shot"><img src="../images/post-detail.jpg" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. OVERVIEW ============ -->
+<section class="page">
+  <div class="kicker">01 — Overview</div>
+  <h1 class="title">DBを持つWebサービスを、画面からデプロイまで一人で作り切る</h1>
+  <p class="lead">inustaは、認証・投稿・コメント・画像保存を備えたフルスタックのSNSです。この1作品で示せる力を整理しました。</p>
+
+  <div class="body grid" style="grid-template-columns: 420px 1fr;">
+    <div class="card" style="background: var(--bg); border: none;">
+      <h3>サービス概要</h3>
+      <div class="row3" style="margin-top:10px;">
+        <div class="k">対象</div><div>愛犬の写真を気軽に残し、共有したい飼い主</div>
+        <div class="k">目的</div><div>写真の投稿とコメントで、飼い主同士がゆるく交流できる場をつくる</div>
+        <div class="k">形態</div><div>自社サービス型のWebアプリ（PC・スマホ対応）</div>
+        <div class="k">公開</div><div>Vercelにデプロイし、PostgreSQLとVercel Blobに接続</div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 18px;">
+        <div class="card" style="padding:10px 12px; text-align:center;"><div style="font-size:34px; font-weight:900; color:var(--accent);">14</div><div class="xs muted">画面（ルート）</div></div>
+        <div class="card" style="padding:10px 12px; text-align:center;"><div style="font-size:34px; font-weight:900; color:var(--accent);">9</div><div class="xs muted">Server Actions</div></div>
+        <div class="card" style="padding:10px 12px; text-align:center;"><div style="font-size:34px; font-weight:900; color:var(--accent);">3</div><div class="xs muted">DBモデル</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="small muted" style="font-weight:700; margin-bottom: 8px;">この作品で示せること</div>
+      <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="card"><span class="tag">認証・認可</span><p class="small" style="margin-top:8px;">Auth.jsのCredentials認証とMiddlewareでのルート保護。更新・削除はサーバー側で所有者を確認。</p></div>
+        <div class="card"><span class="tag g">DB設計・CRUD</span><p class="small" style="margin-top:8px;">PrismaでUser・Post・Commentの1対多を定義。一覧・詳細・作成・編集・削除を実装。</p></div>
+        <div class="card"><span class="tag o">画像アップロード</span><p class="small" style="margin-top:8px;">Vercel Blobに保存し、URLをDBへ。形式・サイズをサーバー側で検証。</p></div>
+        <div class="card"><span class="tag v">UI / UX</span><p class="small" style="margin-top:8px;">Tailwind CSSでレスポンシブ対応。スケルトン表示、追加読み込み、削除前の確認モーダル。</p></div>
+        <div class="card" style="grid-column: span 2; display:flex; gap: 14px; align-items:flex-start;"><span class="tag r" style="flex:none;">運用・デプロイ</span><p class="small">Vercelでの環境変数・DB接続・画像ドメイン設定を調整し本番公開。依存パッケージの脆弱性対応とNode.js v22への更新も実施。</p></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 20px; display:flex; align-items:center; gap: 10px; flex-wrap: wrap; font-size: 13.5px;">
+    <b style="margin-right: 6px;">技術スタック</b>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Next.js 15</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">React 19</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">TypeScript</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Tailwind CSS 4</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Server Actions</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Auth.js v5</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">bcrypt</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Zod</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Prisma 6</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">PostgreSQL</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Vercel Blob</span>
+    <span class="tag" style="background:#eef0f4; color:var(--ink);">Vercel</span>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>2</span></div>
+</section>
+
+<!-- ============ 3. SCREENS ============ -->
+<section class="page">
+  <div class="kicker">02 — Screens</div>
+  <h1 class="title">主要画面と利用の流れ</h1>
+  <p class="lead">未ログイン時はトップ・登録・ログインのみ。ログイン後はナビゲーションから4つの主要画面を行き来します。</p>
+
+  <div class="body" style="position:relative;">
+    <!-- flow strip -->
+    <div style="display:flex; align-items:center; gap: 10px; margin-bottom: 20px; font-size: 14px;">
+      <span class="tag" style="background:#eef0f4; color:var(--sub);">トップ</span><span class="muted">→</span>
+      <span class="tag" style="background:#eef0f4; color:var(--sub);">会員登録 / ログイン</span><span class="muted">→</span>
+      <span class="tag o">ホーム（新着投稿）</span><span class="muted">⇄</span>
+      <span class="tag o">投稿詳細・コメント</span><span class="muted">⇄</span>
+      <span class="tag o">投稿作成</span><span class="muted">⇄</span>
+      <span class="tag o">マイページ・プロフィール編集</span>
+    </div>
+
+    <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 18px;">
+      <div>
+        <div class="shot crop"><img src="../images/card-posts.jpg" alt=""></div>
+        <div class="cap">ホーム<span>/posts</span></div>
+        <ul class="dots small muted" style="margin-top:6px;"><li>全ユーザーの新着投稿を一覧</li><li>スクロールで20件ずつ追加読み込み</li><li>コメント数・投稿者を表示</li></ul>
+      </div>
+      <div>
+        <div class="shot crop"><img src="../images/card-post-detail.jpg" alt=""></div>
+        <div class="cap">投稿詳細<span>/posts/[id]</span></div>
+        <ul class="dots small muted" style="margin-top:6px;"><li>画像・キャプション・投稿者</li><li>コメント一覧と投稿フォーム</li><li>本人の投稿なら編集導線</li></ul>
+      </div>
+      <div>
+        <div class="shot crop"><img src="../images/card-create.jpg" alt=""></div>
+        <div class="cap">投稿作成<span>/posts/create</span></div>
+        <ul class="dots small muted" style="margin-top:6px;"><li>画像選択とプレビュー</li><li>JPEG・PNG・WebP・GIF／5MBまで</li><li>キャプションは任意</li></ul>
+      </div>
+      <div>
+        <div class="shot crop"><img src="../images/card-dashboard.jpg" alt=""></div>
+        <div class="cap">マイページ<span>/dashboard</span></div>
+        <ul class="dots small muted" style="margin-top:6px;"><li>自分の投稿をグリッド表示</li><li>プロフィール編集・ログアウト</li><li>投稿ごとに編集・削除へ</li></ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px; padding: 12px 18px; display:flex; gap: 28px; font-size: 14px; background: var(--bg); border:none;">
+      <div><b>その他の画面</b></div>
+      <div class="muted">投稿編集・削除 <span class="mono xs">/posts/[id]/edit</span></div>
+      <div class="muted">プロフィール編集 <span class="mono xs">/profile</span></div>
+      <div class="muted">ユーザー一覧・詳細 <span class="mono xs">/users</span></div>
+      <div class="muted">登録完了 <span class="mono xs">/register/complete</span></div>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>3</span></div>
+</section>
+
+<!-- ============ 4. ARCHITECTURE ============ -->
+<section class="page">
+  <div class="kicker">03 — Architecture</div>
+  <h1 class="title">技術構成：読み取りはServer Components、書き込みはServer Actions</h1>
+  <p class="lead">APIを別サーバーに立てず、Next.js（App Router）の中でDB・ストレージ・認証までつなげています。</p>
+
+  <div class="body grid" style="grid-template-columns: 760px 1fr; gap: 30px;">
+    <svg viewBox="0 0 790 470" width="760" height="452">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6477"/></marker>
+      </defs>
+      <!-- vercel frame -->
+      <rect x="150" y="10" width="420" height="450" rx="14" fill="#f6f7f9" stroke="#dfe3ea"/>
+      <text x="166" y="34" font-size="12" font-weight="700" fill="#8a93a6">Vercel ／ Next.js 15（App Router）</text>
+
+      <!-- user -->
+      <rect x="0" y="195" width="118" height="70" rx="10" fill="#1f2a44"/>
+      <text x="59" y="225" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">ブラウザ</text>
+      <text x="59" y="245" font-size="11" fill="#c9d0de" text-anchor="middle">React 19 / Tailwind</text>
+
+      <!-- middleware -->
+      <rect x="175" y="50" width="370" height="58" rx="10" fill="#fff" stroke="#2f6fe0" stroke-width="1.5"/>
+      <text x="190" y="74" font-size="14" font-weight="700" fill="#2f6fe0">Middleware（Auth.js）</text>
+      <text x="190" y="94" font-size="11.5" fill="#5b6477">全リクエストでセッション確認 → 未ログインは /login へ</text>
+
+      <!-- RSC -->
+      <rect x="175" y="130" width="175" height="100" rx="10" fill="#fff" stroke="#1f9d6b" stroke-width="1.5"/>
+      <text x="190" y="155" font-size="14" font-weight="700" fill="#1f9d6b">Server Components</text>
+      <text x="190" y="175" font-size="11.5" fill="#5b6477">画面の初期データ取得</text>
+      <text x="190" y="193" font-size="11" fill="#8a93a6" font-family="JetBrains Mono">lib/apis.ts</text>
+      <text x="190" y="211" font-size="11" fill="#5b6477">Suspense＋スケルトン</text>
+
+      <!-- SA -->
+      <rect x="370" y="130" width="175" height="100" rx="10" fill="#fff" stroke="#e07a2f" stroke-width="1.5"/>
+      <text x="385" y="155" font-size="14" font-weight="700" fill="#e07a2f">Server Actions</text>
+      <text x="385" y="175" font-size="11.5" fill="#5b6477">登録・投稿・編集・削除</text>
+      <text x="385" y="193" font-size="11" fill="#8a93a6" font-family="JetBrains Mono">lib/actions.ts</text>
+      <text x="385" y="211" font-size="11" fill="#5b6477">revalidatePath → redirect</text>
+
+      <!-- libs row -->
+      <rect x="290" y="262" width="76" height="62" rx="10" fill="#fff" stroke="#dfe3ea"/>
+      <text x="328" y="288" font-size="13.5" font-weight="700" fill="#1c2233" text-anchor="middle">Zod</text>
+      <text x="328" y="307" font-size="11" fill="#5b6477" text-anchor="middle">入力検証</text>
+      <rect x="374" y="262" width="76" height="62" rx="10" fill="#fff" stroke="#dfe3ea"/>
+      <text x="412" y="288" font-size="13.5" font-weight="700" fill="#1c2233" text-anchor="middle">Auth.js</text>
+      <text x="412" y="307" font-size="11" fill="#5b6477" text-anchor="middle">セッション</text>
+      <rect x="458" y="262" width="66" height="62" rx="10" fill="#fff" stroke="#dfe3ea"/>
+      <text x="491" y="288" font-size="13.5" font-weight="700" fill="#1c2233" text-anchor="middle">bcrypt</text>
+      <text x="491" y="307" font-size="11" fill="#5b6477" text-anchor="middle">ハッシュ</text>
+
+      <!-- prisma -->
+      <rect x="175" y="350" width="370" height="58" rx="10" fill="#fff" stroke="#7a4fd6" stroke-width="1.5"/>
+      <text x="190" y="374" font-size="14" font-weight="700" fill="#7a4fd6">Prisma Client</text>
+      <text x="190" y="394" font-size="11.5" fill="#5b6477">型付きクエリ／select で必要な列だけ取得</text>
+
+      <!-- external -->
+      <rect x="620" y="345" width="165" height="70" rx="10" fill="#1f2a44"/>
+      <text x="702" y="375" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">PostgreSQL</text>
+      <text x="702" y="395" font-size="11" fill="#c9d0de" text-anchor="middle">User / Post / Comment</text>
+      <rect x="620" y="150" width="165" height="70" rx="10" fill="#1f2a44"/>
+      <text x="702" y="180" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">Vercel Blob</text>
+      <text x="702" y="200" font-size="11" fill="#c9d0de" text-anchor="middle">投稿・アイコン画像</text>
+
+      <!-- arrows -->
+      <path d="M118,215 L172,90" stroke="#5b6477" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <path d="M118,222 L172,190" stroke="#5b6477" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <path d="M118,246 L395,246 L395,234" stroke="#e07a2f" stroke-width="1.5" fill="none" marker-end="url(#ar)" stroke-dasharray="5 4"/>
+      <text x="250" y="241" font-size="10.5" fill="#e07a2f">FormData 送信</text>
+      <path d="M240,230 L240,347" stroke="#1f9d6b" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <path d="M440,230 L440,259" stroke="#e07a2f" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <path d="M536,230 L536,347" stroke="#e07a2f" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <path d="M545,180 L617,183" stroke="#e07a2f" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <text x="556" y="172" font-size="10.5" fill="#e07a2f">put()</text>
+      <path d="M545,379 L617,380" stroke="#7a4fd6" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <text x="0" y="290" font-size="10.5" fill="#8a93a6">画像はBlobのURLから</text>
+      <text x="0" y="306" font-size="10.5" fill="#8a93a6">next/imageで直接表示</text>
+    </svg>
+
+    <div>
+      <table class="t" style="font-size: 13px;">
+        <tr><th>技術</th><th>役割</th></tr>
+        <tr><td>Next.js / React</td><td>画面とサーバー処理を1つのアプリで実装</td></tr>
+        <tr><td>Middleware</td><td>ログイン必須ページへの未認証アクセスを遮断</td></tr>
+        <tr><td>Server Actions</td><td>フォーム送信を受け、検証・保存・再描画まで行う</td></tr>
+        <tr><td>Zod</td><td>登録・ログイン入力の形式を実行時に検証</td></tr>
+        <tr><td>Auth.js / bcrypt</td><td>メール＋パスワード認証、ハッシュ照合</td></tr>
+        <tr><td>Prisma</td><td>スキーマ定義から型付きのDB操作を生成</td></tr>
+        <tr><td>PostgreSQL</td><td>ユーザー・投稿・コメントを保存</td></tr>
+        <tr><td>Vercel Blob</td><td>画像ファイルを保存し公開URLを返す</td></tr>
+      </table>
+      <p class="xs muted" style="margin-top: 10px; font-size: 12px;">※ 例外として、ヘッダーのユーザー表示用に Route Handler <span class="mono">GET /api/me</span> を1本用意しています。</p>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>4</span></div>
+</section>
+
+<!-- ============ 5. DATA ============ -->
+<section class="page">
+  <div class="kicker">04 — Data Design</div>
+  <h1 class="title">データ設計と、機能ごとの処理</h1>
+  <p class="lead">3つのモデルを1対多でつなぎ、ユーザーや投稿を削除すると関連データも連鎖削除される構造にしました。</p>
+
+  <div class="body grid" style="grid-template-columns: 560px 1fr; gap: 28px;">
+    <svg viewBox="0 0 560 460" width="560" height="460">
+      <defs>
+        <marker id="one" viewBox="0 0 12 12" refX="1" refY="6" markerWidth="12" markerHeight="12" orient="auto"><path d="M3,1 L3,11 M7,1 L7,11" stroke="#1c2233" stroke-width="1.4"/></marker>
+        <marker id="many" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto"><path d="M13,1 L3,7 L13,13 M3,1 L3,13" stroke="#1c2233" stroke-width="1.4" fill="none"/></marker>
+      </defs>
+      <!-- User -->
+      <g>
+        <rect x="10" y="20" width="220" height="230" rx="10" fill="#fff" stroke="#1c2233" stroke-width="1.4"/>
+        <rect x="10" y="20" width="220" height="36" rx="10" fill="#1f2a44"/><rect x="10" y="44" width="220" height="12" fill="#1f2a44"/>
+        <text x="24" y="44" font-size="14" font-weight="700" fill="#fff">User</text><text x="216" y="44" font-size="11" fill="#c9d0de" text-anchor="end" font-family="JetBrains Mono">users</text>
+        <g font-size="12" font-family="JetBrains Mono" fill="#1c2233">
+          <text x="24" y="80">id</text><text x="216" y="80" text-anchor="end" fill="#e07a2f">PK cuid</text>
+          <text x="24" y="104">name</text><text x="216" y="104" text-anchor="end" fill="#8a93a6">String</text>
+          <text x="24" y="128">email</text><text x="216" y="128" text-anchor="end" fill="#2f6fe0">UNIQUE</text>
+          <text x="24" y="152">password</text><text x="216" y="152" text-anchor="end" fill="#8a93a6">bcrypt hash</text>
+          <text x="24" y="176">image</text><text x="216" y="176" text-anchor="end" fill="#8a93a6">String?</text>
+          <text x="24" y="200">description</text><text x="216" y="200" text-anchor="end" fill="#8a93a6">String?</text>
+          <text x="24" y="224">createdAt / updatedAt</text>
+        </g>
+      </g>
+      <!-- Post -->
+      <g>
+        <rect x="330" y="20" width="220" height="200" rx="10" fill="#fff" stroke="#1c2233" stroke-width="1.4"/>
+        <rect x="330" y="20" width="220" height="36" rx="10" fill="#e07a2f"/><rect x="330" y="44" width="220" height="12" fill="#e07a2f"/>
+        <text x="344" y="44" font-size="14" font-weight="700" fill="#fff">Post</text><text x="536" y="44" font-size="11" fill="#fff" text-anchor="end" font-family="JetBrains Mono">posts</text>
+        <g font-size="12" font-family="JetBrains Mono" fill="#1c2233">
+          <text x="344" y="80">id</text><text x="536" y="80" text-anchor="end" fill="#e07a2f">PK cuid</text>
+          <text x="344" y="104">image</text><text x="536" y="104" text-anchor="end" fill="#8a93a6">Blob URL</text>
+          <text x="344" y="128">caption</text><text x="536" y="128" text-anchor="end" fill="#8a93a6">String</text>
+          <text x="344" y="152">userId</text><text x="536" y="152" text-anchor="end" fill="#7a4fd6">FK → User</text>
+          <text x="344" y="176">createdAt / updatedAt</text>
+        </g>
+      </g>
+      <!-- Comment -->
+      <g>
+        <rect x="170" y="300" width="220" height="150" rx="10" fill="#fff" stroke="#1c2233" stroke-width="1.4"/>
+        <rect x="170" y="300" width="220" height="36" rx="10" fill="#2f6fe0"/><rect x="170" y="324" width="220" height="12" fill="#2f6fe0"/>
+        <text x="184" y="324" font-size="14" font-weight="700" fill="#fff">Comment</text><text x="376" y="324" font-size="11" fill="#fff" text-anchor="end" font-family="JetBrains Mono">comments</text>
+        <g font-size="12" font-family="JetBrains Mono" fill="#1c2233">
+          <text x="184" y="360">id</text><text x="376" y="360" text-anchor="end" fill="#e07a2f">PK cuid</text>
+          <text x="184" y="382">text</text><text x="376" y="382" text-anchor="end" fill="#8a93a6">String</text>
+          <text x="184" y="404">userId</text><text x="376" y="404" text-anchor="end" fill="#7a4fd6">FK → User</text>
+          <text x="184" y="426">postId</text><text x="376" y="426" text-anchor="end" fill="#7a4fd6">FK → Post</text>
+        </g>
+      </g>
+      <!-- relations -->
+      <path d="M230,110 L330,110" stroke="#1c2233" stroke-width="1.4" marker-start="url(#one)" marker-end="url(#many)"/>
+      <text x="280" y="100" font-size="11" fill="#5b6477" text-anchor="middle">creates</text>
+      <path d="M120,250 L120,375 L170,375" stroke="#1c2233" stroke-width="1.4" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+      <text x="126" y="300" font-size="11" fill="#5b6477">writes</text>
+      <path d="M440,220 L440,375 L390,375" stroke="#1c2233" stroke-width="1.4" fill="none" marker-start="url(#one)" marker-end="url(#many)"/>
+      <text x="446" y="300" font-size="11" fill="#5b6477">has</text>
+      <text x="280" y="140" font-size="10.5" fill="#d64545" text-anchor="middle">onDelete: Cascade</text>
+    </svg>
+
+    <div>
+      <table class="t">
+        <tr><th style="width:120px;">機能</th><th>主な処理</th></tr>
+        <tr><td>会員登録</td><td>Zod検証 → メール重複確認 → bcryptでハッシュ化 → User作成 → 自動ログイン</td></tr>
+        <tr><td>ログイン</td><td>Zod検証 → Userを取得 → bcrypt.compare → セッション発行</td></tr>
+        <tr><td>投稿作成</td><td>認証 → 画像の形式・サイズ検証 → Blob保存 → Post作成</td></tr>
+        <tr><td>投稿編集・削除</td><td>投稿ID <b>と</b> ログインユーザーIDの両方で絞り込んで更新・削除</td></tr>
+        <tr><td>コメント</td><td>投稿の存在確認 → Comment作成 → 詳細ページを再検証</td></tr>
+        <tr><td>プロフィール</td><td>name・自己紹介を更新、画像があればBlobへ差し替え</td></tr>
+        <tr><td>新着一覧</td><td><span class="mono">skip / take</span> で20件ずつ取得、<span class="mono">_count</span> でコメント数を同時取得</td></tr>
+      </table>
+      <div class="card" style="margin-top: 14px; background: var(--bg); border: none; padding: 12px 16px;">
+        <div class="xs" style="font-weight:700; color: var(--sub); margin-bottom: 4px;">設計のポイント</div>
+        <ul class="dots small">
+          <li>画像本体はDBに入れず、BlobのURLだけを保存</li>
+          <li>一覧取得は <span class="mono">select</span> で表示に必要な列だけを返し、パスワード等を画面側に渡さない</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>5</span></div>
+</section>
+
+<!-- ============ 6. AUTH ============ -->
+<section class="page">
+  <div class="kicker">05 — Authentication &amp; Authorization</div>
+  <h1 class="title">認証・認可：「ログインしているか」と「本人の投稿か」を分けて守る</h1>
+  <p class="lead">画面の入口はMiddlewareで、データの書き換えはServer Actionの中で、それぞれサーバー側で確認しています。</p>
+
+  <div class="body grid" style="grid-template-columns: 1fr 1fr; gap: 26px;">
+    <!-- login sequence -->
+    <div>
+      <div style="display:flex; align-items:center; margin-bottom: 8px;"><span class="num">1</span><b>ログイン（認証）</b></div>
+      <svg viewBox="0 0 560 330" width="560" height="330">
+        <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1c2233"/></marker>
+        <marker id="a2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a93a6"/></marker></defs>
+        <g font-size="12" font-weight="700" text-anchor="middle">
+          <rect x="10" y="0" width="100" height="30" rx="6" fill="#1f2a44"/><text x="60" y="20" fill="#fff">ブラウザ</text>
+          <rect x="150" y="0" width="120" height="30" rx="6" fill="#e07a2f"/><text x="210" y="20" fill="#fff">authenticate</text>
+          <rect x="310" y="0" width="110" height="30" rx="6" fill="#2f6fe0"/><text x="365" y="20" fill="#fff">Auth.js</text>
+          <rect x="455" y="0" width="100" height="30" rx="6" fill="#7a4fd6"/><text x="505" y="20" fill="#fff">DB</text>
+        </g>
+        <g stroke="#dfe3ea" stroke-dasharray="3 3"><line x1="60" y1="30" x2="60" y2="325"/><line x1="210" y1="30" x2="210" y2="325"/><line x1="365" y1="30" x2="365" y2="325"/><line x1="505" y1="30" x2="505" y2="325"/></g>
+        <g font-size="11.5" fill="#1c2233" stroke-width="1.4">
+          <line x1="60" y1="60" x2="207" y2="60" stroke="#1c2233" marker-end="url(#a2)"/><text x="70" y="53">email / password</text>
+          <line x1="210" y1="95" x2="362" y2="95" stroke="#1c2233" marker-end="url(#a2)"/><text x="220" y="88">signIn("credentials")</text>
+          <rect x="370" y="112" width="120" height="26" rx="4" fill="#e8f0fd"/><text x="378" y="129">Zodで形式を検証</text>
+          <line x1="365" y1="160" x2="502" y2="160" stroke="#1c2233" marker-end="url(#a2)"/><text x="375" y="153">email で User 取得</text>
+          <line x1="505" y1="190" x2="368" y2="190" stroke="#8a93a6" stroke-dasharray="4 3" marker-end="url(#a2g)"/><text x="420" y="205" fill="#5b6477">hash</text>
+          <rect x="370" y="215" width="150" height="26" rx="4" fill="#e8f0fd"/><text x="378" y="232">bcrypt.compare で照合</text>
+          <line x1="365" y1="270" x2="63" y2="270" stroke="#8a93a6" stroke-dasharray="4 3" marker-end="url(#a2g)"/><text x="75" y="263" fill="#5b6477">セッションCookie → /dashboard</text>
+          <line x1="210" y1="305" x2="63" y2="305" stroke="#d64545" stroke-dasharray="4 3" marker-end="url(#a2g)"/><text x="75" y="298" fill="#d64545">失敗時：日本語メッセージを返す</text>
+        </g>
+      </svg>
+    </div>
+
+    <div>
+      <div style="display:flex; align-items:center; margin-bottom: 8px;"><span class="num">2</span><b>ページ単位のアクセス制御（Middleware）</b></div>
+      <table class="t" style="font-size: 13px;">
+        <tr><th>アクセス先</th><th>未ログイン</th><th>ログイン済み</th></tr>
+        <tr><td><span class="mono">/</span>・<span class="mono">/login</span>・<span class="mono">/register</span></td><td>表示</td><td><span class="mono">/dashboard</span> へ</td></tr>
+        <tr><td>上記以外（投稿・マイページ等）</td><td><span class="mono">/login</span> へ</td><td>表示</td></tr>
+        <tr><td><span class="mono">/register/complete</span></td><td colspan="2">登録直後の遷移を妨げないよう常に表示</td></tr>
+      </table>
+
+      <div style="display:flex; align-items:center; margin: 18px 0 8px;"><span class="num">3</span><b>データ単位の認可（Server Action）</b></div>
+      <p class="small muted">編集・削除は、投稿IDだけでなく<b style="color:var(--ink)">ログインユーザーのIDも条件に含めて</b>DBを操作します。画面のボタンを隠すだけでは、フォームを直接送られると防げないためです。</p>
+      <div class="codebox" style="margin-top: 10px;"><span class="c">// lib/actions.ts（抜粋）</span>
+const session = await auth();
+const user = await prisma.user.findFirstOrThrow({ where: { email } });
+await prisma.post.delete({
+  where: { id, <span class="h">userId: user.id</span> },  <span class="c">// 他人の投稿は一致しない</span>
+});</div>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>6</span></div>
+</section>
+
+<!-- ============ 7. POST FLOW ============ -->
+<section class="page">
+  <div class="kicker">06 — Key Flow</div>
+  <h1 class="title">代表処理：画像付き投稿の作成</h1>
+  <p class="lead">フォーム送信から画面更新まで、1つのServer Actionの中で「認証 → 検証 → 保存 → 再描画」を順に行います。</p>
+
+  <div class="body grid" style="grid-template-columns: 700px 1fr; gap: 28px;">
+    <svg viewBox="0 0 760 470" width="700" height="433">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1c2233"/></marker>
+      <marker id="a3g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a93a6"/></marker></defs>
+      <g font-size="12.5" font-weight="700" text-anchor="middle">
+        <rect x="0" y="0" width="110" height="32" rx="6" fill="#1f2a44"/><text x="55" y="21" fill="#fff">ユーザー</text>
+        <rect x="140" y="0" width="120" height="32" rx="6" fill="#5b6477"/><text x="200" y="21" fill="#fff">投稿フォーム</text>
+        <rect x="290" y="0" width="140" height="32" rx="6" fill="#e07a2f"/><text x="360" y="21" fill="#fff">createPost</text>
+        <rect x="460" y="0" width="110" height="32" rx="6" fill="#2f6fe0"/><text x="515" y="21" fill="#fff">Auth.js</text>
+        <rect x="590" y="0" width="80" height="32" rx="6" fill="#1f9d6b"/><text x="630" y="21" fill="#fff">Blob</text>
+        <rect x="680" y="0" width="80" height="32" rx="6" fill="#7a4fd6"/><text x="720" y="21" fill="#fff">DB</text>
+      </g>
+      <g stroke="#dfe3ea" stroke-dasharray="3 3"><line x1="55" y1="32" x2="55" y2="455"/><line x1="200" y1="32" x2="200" y2="455"/><line x1="360" y1="32" x2="360" y2="455"/><line x1="515" y1="32" x2="515" y2="455"/><line x1="630" y1="32" x2="630" y2="455"/><line x1="720" y1="32" x2="720" y2="455"/></g>
+      <g font-size="12" fill="#1c2233" stroke-width="1.4">
+        <line x1="55" y1="62" x2="197" y2="62" stroke="#1c2233" marker-end="url(#a3)"/><text x="64" y="55">画像選択・キャプション</text>
+        <rect x="205" y="74" width="140" height="26" rx="4" fill="#f6f7f9"/><text x="212" y="91">プレビュー表示</text>
+        <line x1="200" y1="125" x2="357" y2="125" stroke="#1c2233" marker-end="url(#a3)"/><text x="210" y="118">FormData 送信</text>
+        <line x1="360" y1="158" x2="512" y2="158" stroke="#1c2233" marker-end="url(#a3)"/><text x="370" y="151">auth() でログイン確認</text>
+        <rect x="236" y="176" width="118" height="68" rx="6" fill="#fdf0e5" stroke="#e07a2f"/>
+        <text x="244" y="196" font-weight="700" fill="#e07a2f">サーバー側検証</text>
+        <text x="244" y="215">・形式 4種のみ</text>
+        <text x="244" y="233">・5MB以下</text>
+        <line x1="360" y1="270" x2="627" y2="270" stroke="#1c2233" marker-end="url(#a3)"/><text x="370" y="263">put(image) で保存</text>
+        <line x1="630" y1="298" x2="363" y2="298" stroke="#8a93a6" stroke-dasharray="4 3" marker-end="url(#a3g)"/><text x="530" y="315" fill="#5b6477">公開URL</text>
+        <line x1="360" y1="340" x2="717" y2="340" stroke="#1c2233" marker-end="url(#a3)"/><text x="370" y="333">Post 作成（image = URL, userId）</text>
+        <rect x="366" y="358" width="200" height="26" rx="4" fill="#f6f7f9"/><text x="374" y="375">revalidatePath("/dashboard")</text>
+        <line x1="360" y1="410" x2="58" y2="410" stroke="#8a93a6" stroke-dasharray="4 3" marker-end="url(#a3g)"/><text x="70" y="403" fill="#5b6477">redirect → マイページに新しい投稿が表示</text>
+        <line x1="360" y1="440" x2="203" y2="440" stroke="#d64545" stroke-dasharray="4 3" marker-end="url(#a3g)"/><text x="210" y="455" fill="#d64545" font-size="11">検証NG時はエラーで中断</text>
+      </g>
+    </svg>
+
+    <div>
+      <div class="card" style="border-left: 4px solid var(--accent);">
+        <h3>バリデーションの置き場所</h3>
+        <table class="t" style="font-size: 13px;">
+          <tr><th style="width:92px;">対象</th><th style="width:110px;">ブラウザ</th><th>サーバー</th></tr>
+          <tr><td>投稿画像</td><td>形式・5MB・プレビュー</td><td>形式・サイズ</td></tr>
+          <tr><td>会員登録</td><td>—</td><td>Zod：必須・形式・8文字以上・確認一致・重複</td></tr>
+          <tr><td>ログイン</td><td>—</td><td>Zod＋bcrypt</td></tr>
+          <tr><td>コメント</td><td>—</td><td>未入力チェック</td></tr>
+        </table>
+        <p class="xs muted" style="margin-top: 8px; font-size:12.5px;">ブラウザ側は使いやすさのため、最終判断は必ずサーバー側で行う方針です。</p>
+      </div>
+      <div class="card" style="margin-top: 14px;">
+        <h3>Blobを先に保存する理由</h3>
+        <p class="xs muted" style="font-size:13.5px;">Postの <span class="mono">image</span> は必須項目のため、先にBlobへ保存してURLを確定させてからレコードを作成します。これにより「画像のない投稿」がDBに残りません。</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>7</span></div>
+</section>
+
+<!-- ============ 8. PROBLEM SOLVING ============ -->
+<section class="page">
+  <div class="kicker">07 — Problem Solving</div>
+  <h1 class="title">問題解決：見つけた課題と、その対応</h1>
+  <p class="lead">実装・デプロイ中に発生した課題を「課題・対応・結果」の3行で整理しました。</p>
+
+  <div class="body grid fill" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+    <div class="card" style="padding: 22px 22px;">
+      <span class="tag r">セキュリティ</span>
+      <h3 style="margin-top: 12px; font-size: 19px; line-height:1.45;">他人の投稿を書き換えられないようにする</h3>
+      <div class="row3" style="margin-top: 18px; grid-template-columns: 44px 1fr; gap: 16px 10px; font-size: 15.5px; line-height:1.75;">
+        <div class="k">課題</div><div>編集・削除ボタンを本人にだけ表示しても、投稿IDを指定したリクエストを直接送れば操作できてしまう。</div>
+        <div class="k">対応</div><div>Server Actionでセッションからユーザーを特定し、<span class="mono">where: {id, userId}</span> で更新・削除するよう変更。</div>
+        <div class="k">結果</div><div>所有者以外の操作はDBで一致せず失敗し、画面の作りに依存せずサーバー側で守れるようになった。</div>
+      </div>
+    </div>
+    <div class="card" style="padding: 22px 22px;">
+      <span class="tag o">不具合修正</span>
+      <h3 style="margin-top: 12px; font-size: 19px; line-height:1.45;">投稿時に選んだ画像が消える</h3>
+      <div class="row3" style="margin-top: 18px; grid-template-columns: 44px 1fr; gap: 16px 10px; font-size: 15.5px; line-height:1.75;">
+        <div class="k">課題</div><div>プレビュー表示に切り替える際にfile inputがDOMから外れ、送信時に画像が含まれないことがあった。形式・サイズの制限もなかった。</div>
+        <div class="k">対応</div><div>inputを常に描画したまま見た目だけ切り替え、画像削除時は値をリセット。Server Actionに形式・5MBの検証を追加。</div>
+        <div class="k">結果</div><div>画像が確実に送信され、想定外のファイルはサーバーで弾かれるようになった。</div>
+      </div>
+    </div>
+    <div class="card" style="padding: 22px 22px;">
+      <span class="tag">デプロイ</span>
+      <h3 style="margin-top: 12px; font-size: 19px; line-height:1.45;">本番環境でDB・画像がつながらない</h3>
+      <div class="row3" style="margin-top: 18px; grid-template-columns: 44px 1fr; gap: 16px 10px; font-size: 15.5px; line-height:1.75;">
+        <div class="k">課題</div><div>Vercelで発行される接続用の環境変数名とPrismaの参照先が食い違い、本番でDBに接続できなかった。Blob画像もnext/imageで表示できなかった。</div>
+        <div class="k">対応</div><div>ログで実際の値を確認しながら接続先を <span class="mono">DATABASE_URL</span> に統一。BlobのドメインをremotePatternsに登録。</div>
+        <div class="k">結果</div><div>ローカルと本番で同じ設定名で動くようになり、画像も最適化された状態で配信できた。</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>8</span></div>
+</section>
+
+<!-- ============ 9. DESIGN DECISIONS ============ -->
+<section class="page">
+  <div class="kicker">08 — Design Decisions</div>
+  <h1 class="title">設計上の判断</h1>
+  <p class="lead">「なぜその方法を選んだか」を説明できるように、主な判断を残しています。</p>
+
+  <div class="body grid fill" style="grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 18px;">
+    <div class="card">
+      <h3 style="font-size:18px; margin-bottom:10px;"><span class="tag g" style="margin-right:8px;">構成</span>REST APIを作らずServer Actionsを採用</h3>
+      <p class="small muted">画面とサーバー処理を同じアプリ内に置けるため、APIの型定義やfetch処理を二重に書かずに済みます。読み取りは <span class="mono">lib/apis.ts</span>、書き込みは <span class="mono">lib/actions.ts</span> にまとめ、役割で分けました。</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:18px; margin-bottom:10px;"><span class="tag v" style="margin-right:8px;">UX</span>無限スクロールは重複を防いで追加</h3>
+      <p class="small muted">初回20件をサーバーで描画し、末尾が見えたら <span class="mono">IntersectionObserver</span> でServer Actionを呼んで次の20件を取得。読み込み中フラグで二重リクエストを防ぎ、IDで重複を除外して結合します。</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:18px; margin-bottom:10px;"><span class="tag o" style="margin-right:8px;">表示</span>Suspense＋スケルトンで待ち時間を見せる</h3>
+      <p class="small muted">DB取得を行うコンポーネントを <span class="mono">Suspense</span> で囲み、読み込み中はレイアウトに合わせたスケルトンを表示。ヘッダーやナビゲーションは先に表示されます。</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:18px; margin-bottom:10px;"><span class="tag r" style="margin-right:8px;">安全</span>取り消せない操作は一度確認する</h3>
+      <p class="small muted">投稿削除は「Danger Zone」として編集画面の下部に分離し、確認モーダルを挟んで実行。プロフィールや投稿の編集も送信前に内容を確認できるようにしました。</p>
+    </div>
+    <div class="card" style="grid-column: span 2; display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div>
+        <h3 style="font-size:18px; margin-bottom:10px;"><span class="tag" style="margin-right:8px;">データ</span>必要な列だけを取得する</h3>
+        <p class="small muted">Prismaの <span class="mono">select</span> で画面ごとに取得列を指定し、パスワードハッシュなど不要な値がクライアントへ渡らないようにしています。コメント数は <span class="mono">_count</span> で一覧と同じクエリ内で取得。</p>
+      </div>
+      <div>
+        <h3 style="font-size:18px; margin-bottom:10px;"><span class="tag g" style="margin-right:8px;">開発</span>シードデータで画面を確認しやすく</h3>
+        <p class="small muted">Prismaのseedで10ユーザー・100投稿・1,000コメントを投入できるようにし、一覧・追加読み込み・詳細の表示確認を実データに近い量で行えるようにしました。</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>9</span></div>
+</section>
+
+<!-- ============ 10. QUALITY / AI / NEXT ============ -->
+<section class="page">
+  <div class="kicker">09 — Quality · AI · Next</div>
+  <h1 class="title">品質への取り組み・AI活用・今後の改善</h1>
+  <p class="lead">現状できていることと、まだ足りないことを分けて整理しています。</p>
+
+  <div class="body grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px; height: 410px;">
+    <div class="card" style="border-top: 4px solid var(--green); padding-top: 18px;">
+      <h3 style="font-size: 20px;">品質</h3>
+      <ul class="dots small" style="margin-top: 12px; font-size:15px; line-height:1.9;">
+        <li>Zodによる登録・ログイン入力の検証</li>
+        <li>bcryptによるパスワードのハッシュ保存</li>
+        <li>サーバー側での所有者確認（編集・削除）</li>
+        <li>画像の形式・サイズ制限</li>
+        <li>TypeScript・ESLint・本番ビルドの通過を確認</li>
+        <li>依存パッケージの脆弱性対応、Node.js v22対応</li>
+        <li>PC・スマホ幅での表示確認</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top: 4px solid var(--violet); padding-top: 18px;">
+      <h3 style="font-size: 20px;">AI活用</h3>
+      <p class="small muted" style="margin-top: 8px;">Claude Codeを「調査と実装案の作成」に使い、採用の判断は自分で行っています。</p>
+      <div style="margin-top: 16px; display:grid; gap: 12px; font-size: 15px;">
+        <div style="display:flex;"><span class="num" style="background:var(--violet);">1</span><div>不具合の原因調査・修正案の作成を依頼</div></div>
+        <div style="display:flex;"><span class="num" style="background:var(--violet);">2</span><div>差分と影響範囲を自分で読んで確認</div></div>
+        <div style="display:flex;"><span class="num" style="background:var(--violet);">3</span><div>Lint・ビルド・画面操作を確認してから採用</div></div>
+      </div>
+      <p class="xs muted" style="margin-top: 12px;">例：投稿画像が消える不具合の原因特定、ESLint循環参照エラーの解消、UI改善項目の洗い出し。</p>
+    </div>
+    <div class="card" style="border-top: 4px solid var(--accent); padding-top: 18px;">
+      <h3 style="font-size: 20px;">今後の改善</h3>
+      <ul class="dots small" style="margin-top: 12px; font-size:15px; line-height:1.9;">
+        <li><b>自動テスト</b>：Server Actionsの単体テスト、Playwrightで主要フローのE2E</li>
+        <li><b>CI</b>：GitHub ActionsでLint・型チェック・ビルドを自動実行</li>
+        <li><b>検証の統一</b>：キャプション・コメント・プロフィール画像にもZodと同じ制限を適用</li>
+        <li><b>監視</b>：エラー監視・ログ収集の導入</li>
+        <li><b>運用</b>：画像差し替え時の旧Blob削除、Docker化</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top: 20px; background: var(--navy); color: #fff; border: none; display:flex; justify-content: space-between; align-items:center; padding: 16px 22px;">
+    <div style="font-size: 15px; font-weight: 700;">ソースコード・デモはこちら</div>
+    <div class="mono" style="font-size: 13px; color:#c9d0de;">github.com/natsumi06/inusta-next　／　inusta-next-delta.vercel.app</div>
+  </div>
+  <div class="foot"><b>inusta — Technical Portfolio</b><span>10</span></div>
+</section>
+
+</body>
+</html>

@@ -111,6 +111,8 @@ export async function registerUser(
     throw new Error("ユーザー登録に失敗しました。");
   }
 
+  revalidatePath("/users");
+
   await signIn("credentials", {
     email,
     password,
@@ -143,6 +145,7 @@ export async function updatePost(id: string, formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/posts");
   redirect("/dashboard");
 }
 
@@ -163,6 +166,8 @@ export async function deletePost(id: string, _formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/posts");
+  revalidatePath("/users");
   redirect("/dashboard");
 }
 
@@ -196,6 +201,7 @@ export async function createComment(postId: string, formData: FormData) {
   });
 
   revalidatePath(`/posts/${postId}`);
+  revalidatePath("/posts");
   redirect(`/posts/${postId}`);
 }
 
@@ -233,6 +239,7 @@ export async function updateMe(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/users");
   redirect("/dashboard");
 }
 
@@ -275,6 +282,8 @@ export async function createPost(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/posts");
+  revalidatePath("/users");
   redirect("/dashboard");
 }
 

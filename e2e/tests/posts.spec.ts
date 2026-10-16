@@ -15,29 +15,32 @@ let context1: BrowserContext;
 let context2: BrowserContext;
 let page1: Page;
 let page2: Page;
-
-const userA: TestUser = {
-  email: `testa-${Date.now()}@example.com`,
-  password: 'Password123!',
-  name: 'Test User A',
-};
-
-const userB: TestUser = {
-  email: `testb-${Date.now()}@example.com`,
-  password: 'Password123!',
-  name: 'Test User B',
-};
+let userA: TestUser;
+let userB: TestUser;
 
 test.describe('投稿機能のテスト', () => {
   test.beforeAll(async ({ playwright }) => {
     browser = await playwright.chromium.launch();
   });
 
-  test.beforeEach(async ({ playwright }) => {
+  test.beforeEach(async () => {
+    // 毎回新しいメールアドレスを生成
+    userA = {
+      email: `testa-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`,
+      password: 'Password123!',
+      name: 'Test User A',
+    };
+
+    userB = {
+      email: `testb-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`,
+      password: 'Password123!',
+      name: 'Test User B',
+    };
+
     context1 = await browser.newContext();
     context2 = await browser.newContext();
-    page1 = context1.newPage();
-    page2 = context2.newPage();
+    page1 = await context1.newPage();
+    page2 = await context2.newPage();
 
     // ユーザーA、Bを登録してログイン
     await registerAndLogin(page1, userA);

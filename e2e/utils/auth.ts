@@ -13,17 +13,28 @@ export async function registerAndLogin(
   page: Page,
   user: TestUser,
 ): Promise<void> {
-  await page.goto('/register');
+  await page.goto('/register', { waitUntil: 'networkidle' });
+
+  // フォーム要素が表示されるまで待機
+  await page.waitForSelector('input[name="name"]', { timeout: 10000 });
 
   await page.fill('input[name="name"]', user.name);
   await page.fill('input[name="email"]', user.email);
   await page.fill('input[name="password"]', user.password);
-  await page.fill('input[name="confirmPassword"]', user.password);
+  await page.fill('input[name="passwordConfirmation"]', user.password);
 
-  await page.click('button[type="submit"]');
+  const submitButton = page.locator('button[type="submit"]');
+  await submitButton.click();
 
-  // ログイン後、ホーム画面(/posts)にリダイレクト
-  await page.waitForURL('/posts', { timeout: 10000 });
+  // 登録完了ページまで待機
+  await page.waitForURL('/register/complete', { timeout: 15000 });
+
+  // 「ホームへ戻る」ボタンをクリック
+  const homeLink = page.locator('a:has-text("ホームへ戻る")');
+  await homeLink.click();
+
+  // ホーム画面(/posts)に移動するまで待機
+  await page.waitForURL('/posts', { timeout: 15000 });
 }
 
 /**

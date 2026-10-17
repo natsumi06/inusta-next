@@ -97,8 +97,8 @@ export default function PostsList({
               : post.caption
             : "";
           return (
-            <article key={post.id} className="relative group overflow-hidden">
-              <Link href={`/posts/${post.id}`}>
+            <Link key={post.id} href={`/posts/${post.id}`}>
+              <article className="relative group overflow-hidden">
                 <Image
                   className="aspect-[1/1] w-full object-cover transition duration-200 group-hover:brightness-110 group-hover:contrast-90"
                   src={post.image}
@@ -106,48 +106,45 @@ export default function PostsList({
                   width={400}
                   height={400}
                 />
-              </Link>
 
-              <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-              <Link
-                href={`/posts/${post.id}/edit`}
-                className="absolute right-2 top-1 hidden rounded-full p-1 group-hover:block"
-              >
-                🐾
-              </Link>
+                <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                <div className="absolute right-2 top-1 hidden rounded-full p-1 group-hover:block">
+                  🐾
+                </div>
 
-              <Link href={`/posts/${post.id}`} className="block">
-                <div className="border p-1">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center">
-                    {post.user.image && (
-                      <Image
-                        className="block aspect-square size-5 rounded-full object-cover"
-                        src={post.user.image}
-                        width={32}
-                        height={32}
-                        alt="user icon"
-                      />
+                <div className="block">
+                  <div className="border p-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center">
+                        {post.user.image && (
+                          <Image
+                            className="block aspect-square size-5 rounded-full object-cover"
+                            src={post.user.image}
+                            width={32}
+                            height={32}
+                            alt="user icon"
+                          />
+                        )}
+                        <p className="ml-1 text-xs font-semibold text-black truncate">
+                          {post.user.name}
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-500 flex-shrink-0 ml-1">
+                        {getRelativeTime(post.createdAt)}
+                      </p>
+                    </div>
+                    {caption && (
+                      <p className="text-xs text-gray-600 truncate mb-1">
+                        {caption}
+                      </p>
                     )}
-                    <p className="ml-1 text-xs font-semibold text-black truncate">
-                      {post.user.name}
+                    <p className="text-xs text-gray-500">
+                      💬 {post._count.comments}
                     </p>
                   </div>
-                  <p className="text-xs text-gray-500 flex-shrink-0 ml-1">
-                    {getRelativeTime(post.createdAt)}
-                  </p>
                 </div>
-                {caption && (
-                  <p className="text-xs text-gray-600 truncate mb-1">
-                    {caption}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500">
-                  💬 {post._count.comments}
-                </p>
-                </div>
-              </Link>
-            </article>
+              </article>
+            </Link>
           );
         })}
       </div>

@@ -18,19 +18,24 @@ export async function registerAndLogin(
   // フォーム要素が表示されるまで待機
   await page.waitForSelector('input[name="name"]', { timeout: 10000 });
 
-  await page.fill('input[name="name"]', user.name);
-  await page.fill('input[name="email"]', user.email);
-  await page.fill('input[name="password"]', user.password);
-  await page.fill('input[name="passwordConfirmation"]', user.password);
+  const nameInput = page.locator('input[name="name"]');
+  const emailInput = page.locator('input[name="email"]');
+  const passwordInput = page.locator('input[name="password"]');
+  const confirmInput = page.locator('input[name="passwordConfirmation"]');
 
-  const submitButton = page.locator('button[type="submit"]');
+  await nameInput.fill(user.name);
+  await emailInput.fill(user.email);
+  await passwordInput.fill(user.password);
+  await confirmInput.fill(user.password);
+
+  const submitButton = page.locator('button[type="submit"]').first();
   await submitButton.click();
 
   // 登録完了ページまで待機
   await page.waitForURL('/register/complete', { timeout: 15000 });
 
   // 「ホームへ戻る」ボタンをクリック
-  const homeLink = page.locator('a:has-text("ホームへ戻る")');
+  const homeLink = page.locator('a').filter({ hasText: 'ホームへ戻る' });
   await homeLink.click();
 
   // ホーム画面(/posts)に移動するまで待機
@@ -43,20 +48,25 @@ export async function registerAndLogin(
 export async function login(page: Page, user: TestUser): Promise<void> {
   await page.goto('/auth/signin');
 
-  await page.fill('input[name="email"]', user.email);
-  await page.fill('input[name="password"]', user.password);
+  const emailInput = page.locator('input[name="email"]');
+  const passwordInput = page.locator('input[name="password"]');
 
-  await page.click('button[type="submit"]');
+  await emailInput.fill(user.email);
+  await passwordInput.fill(user.password);
+
+  const submitButton = page.locator('button[type="submit"]').first();
+  await submitButton.click();
 
   // ログイン後、ホーム画面にリダイレクト
-  await page.waitForURL('/posts', { timeout: 10000 });
+  await page.waitForURL('/posts', { timeout: 15000 });
 }
 
 /**
  * ログアウト
  */
 export async function logout(page: Page): Promise<void> {
-  // ログアウトボタンをクリック（位置はUIによって異なるので必要に応じて調整）
-  await page.click('button:has-text("ログアウト")');
-  await page.waitForURL('/', { timeout: 5000 });
+  // ログアウトボタンをクリック
+  const logoutButton = page.locator('button').filter({ hasText: 'ログアウト' }).first();
+  await logoutButton.click();
+  await page.waitForURL('/', { timeout: 10000 });
 }

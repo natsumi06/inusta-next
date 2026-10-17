@@ -89,7 +89,7 @@ export default function PostsList({
 
   return (
     <div className="mx-auto my-4 w-full bg-white px-4 sm:my-8 sm:max-w-5xl sm:px-0">
-      <div className="grid grid-cols-2 gap-1 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-1 sm:grid-cols-3" data-testid="post-grid">
         {posts.map((post) => {
           const caption = post.caption
             ? post.caption.length > 50
@@ -97,7 +97,7 @@ export default function PostsList({
               : post.caption
             : "";
           return (
-            <div key={post.id} className="relative group overflow-hidden">
+            <article key={post.id} className="relative group overflow-hidden">
               <Link href={`/posts/${post.id}`}>
                 <Image
                   className="aspect-[1/1] w-full object-cover transition duration-200 group-hover:brightness-110 group-hover:contrast-90"
@@ -147,7 +147,7 @@ export default function PostsList({
                 </p>
                 </div>
               </Link>
-            </div>
+            </article>
           );
         })}
       </div>

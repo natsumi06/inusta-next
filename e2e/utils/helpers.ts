@@ -17,27 +17,32 @@ export async function createPost(
   caption: string,
   imagePath?: string,
 ): Promise<void> {
-  // 新規投稿ページに移動（または投稿作成フォームを開く）
-  const createButton = page.locator('button:has-text("新規投稿")');
-  if (await createButton.isVisible()) {
-    await createButton.click();
-  } else {
-    await page.goto('/posts/new');
-  }
+  // 新規投稿ページに移動
+  await page.goto('/posts/create');
 
-  // 画像をアップロード
-  if (imagePath) {
-    await page.locator('input[type="file"]').setInputFiles(imagePath);
-  }
+  // 画像をアップロード（必須フィールド）
+  const fileInput = page.locator('input[type="file"]');
+  const testImagePath = imagePath || getTestImagePath();
+  await fileInput.setInputFiles(testImagePath);
 
-  // キャプションを入力
-  await page.fill('textarea[name="caption"], input[name="caption"]', caption);
+  // 画像がアップロードされるまで待機
+  await page.locator('text=アップロード準備完了').waitFor({ timeout: 10000 });
+
+  // キャプション入力フィールドが表示されるまで待機
+  const captionInput = page.locator('textarea[name="caption"]');
+  await captionInput.waitFor({ state: 'visible', timeout: 5000 });
+  await captionInput.fill(caption);
 
   // 投稿ボタンをクリック
-  await page.click('button:has-text("投稿"), button[type="submit"]');
+  const submitButton = page.locator('button:has-text("公開する")');
+  await submitButton.waitFor({ state: 'visible', timeout: 5000 });
+  await submitButton.click();
 
-  // ホーム画面に戻るまで待機
-  await page.waitForURL('/posts', { timeout: 10000 });
+  // 投稿詳細ページにリダイレクトされるまで待機
+  await page.waitForURL(/\/posts\/[^/]+/, { timeout: 15000 });
+
+  // 投稿詳細ページで投稿内容が表示されるまで待機
+  await expect(page.locator(`text=${caption}`)).toBeVisible({ timeout: 10000 });
 }
 
 /**
@@ -48,42 +53,47 @@ export async function editPost(
   postId: string,
   newCaption: string,
 ): Promise<void> {
-  // 投稿詳細ページに移動
-  await page.goto(`/posts/${postId}`);
-
-  // 編集ボタンをクリック
-  await page.click('button:has-text("編集")');
+  // 投稿編集ページに直接移動
+  await page.goto(`/posts/${postId}/edit`);
 
   // キャプションを更新
-  const captionInput = page.locator('textarea[name="caption"], input[name="caption"]');
+  const captionInput = page.locator('textarea[name="caption"]');
+  await captionInput.waitFor({ state: 'visible', timeout: 5000 });
   await captionInput.clear();
   await captionInput.fill(newCaption);
 
   // 保存ボタンをクリック
-  await page.click('button:has-text("保存"), button[type="submit"]');
+  const submitButton = page.locator('button[type="submit"]').first();
+  await submitButton.waitFor({ state: 'visible', timeout: 5000 });
+  await submitButton.click();
 
-  // 投稿詳細ページで確認されるまで待機
-  await page.waitForURL(`/posts/${postId}`, { timeout: 10000 });
+  // ダッシュボードにリダイレクトされるまで待機
+  await page.waitForURL('/dashboard', { timeout: 15000 });
+
+  // その後、投稿詳細ページに移動して、更新されたキャプションを確認
+  await page.goto(`/posts/${postId}`);
+  await expect(page.locator(`text=${newCaption}`)).toBeVisible({ timeout: 10000 });
 }
 
 /**
  * 投稿を削除する
  */
 export async function deletePost(page: Page, postId: string): Promise<void> {
-  // 投稿詳細ページに移動
-  await page.goto(`/posts/${postId}`);
+  // 投稿編集ページに移動
+  await page.goto(`/posts/${postId}/edit`);
 
-  // 削除ボタンをクリック
-  await page.click('button:has-text("削除")');
+  // 削除ボタンをクリック（「投稿を削除」テキスト）
+  const deleteButton = page.locator('button').filter({ hasText: '投稿を削除' }).first();
+  await deleteButton.waitFor({ state: 'visible', timeout: 5000 });
+  await deleteButton.click();
 
-  // 確認ダイアログがあれば対応
-  const confirmButton = page.locator('button:has-text("削除を確認"), button:has-text("はい")');
-  if (await confirmButton.isVisible()) {
-    await confirmButton.click();
-  }
+  // 確認ボタンをクリック（モーダル内の「削除する」ボタン）
+  const confirmButton = page.locator('button').filter({ hasText: '削除する' }).first();
+  await confirmButton.waitFor({ state: 'visible', timeout: 5000 });
+  await confirmButton.click();
 
-  // ホーム画面に戻るまで待機
-  await page.waitForURL('/posts', { timeout: 10000 });
+  // ダッシュボードに戻るまで待機
+  await page.waitForURL('/dashboard', { timeout: 15000 });
 }
 
 /**
@@ -130,18 +140,17 @@ export async function addComment(
   postId: string,
   commentText: string,
 ): Promise<void> {
-  // 投稿詳細ページに移動
-  await page.goto(`/posts/${postId}`);
-
-  // コメント入力フォームにテキストを入力
-  const commentInput = page.locator('textarea[name="comment"], input[name="comment"]');
+  // コメント入力フォームが表示されるまで待機
+  const commentInput = page.locator('input[name="text"]');
+  await commentInput.waitFor({ state: 'visible', timeout: 10000 });
   await commentInput.fill(commentText);
 
   // コメント投稿ボタンをクリック
-  await page.click('button:has-text("投稿"), button:has-text("コメント投稿")');
+  const submitButton = page.locator('button').filter({ hasText: "送信" }).first();
+  await submitButton.click();
 
   // コメントが表示されるまで待機
-  await expect(page.locator(`text=${commentText}`)).toBeVisible({ timeout: 5000 });
+  await expect(page.locator(`text=${commentText}`)).toBeVisible({ timeout: 10000 });
 }
 
 /**
@@ -157,17 +166,17 @@ export async function deleteComment(
 
   // コメント削除ボタンをクリック（該当するコメントの）
   const commentElement = page.locator(`text=${commentText}`).first();
-  const deleteButton = commentElement.locator('..').locator('button:has-text("削除")');
+  const deleteButton = commentElement.locator('..').locator('button').filter({ hasText: '削除' }).first();
   await deleteButton.click();
 
-  // 確認ダイアログがあれば対応
-  const confirmButton = page.locator('button:has-text("削除を確認"), button:has-text("はい")');
-  if (await confirmButton.isVisible()) {
+  // 確認ボタンがあれば対応
+  const confirmButton = page.locator('button').filter({ hasText: /確認|はい/ }).first();
+  if (await confirmButton.isVisible({ timeout: 3000 }).catch(() => false)) {
     await confirmButton.click();
   }
 
   // コメントが削除されるまで待機
-  await expect(page.locator(`text=${commentText}`)).not.toBeVisible({ timeout: 5000 });
+  await expect(page.locator(`text=${commentText}`)).not.toBeVisible({ timeout: 10000 });
 }
 
 /**

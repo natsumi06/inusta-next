@@ -56,15 +56,27 @@ async function UserDetail({ params }: PageProps) {
         {user.posts.length > 0 ? (
           <div className="grid grid-cols-3 gap-1">
             {user.posts.map((post) => {
+              const caption = post.caption
+                ? post.caption.length > 50
+                  ? post.caption.substring(0, 50) + "..."
+                  : post.caption
+                : "";
               return (
                 <Link href={`/posts/${post.id}`} key={post.id}>
-                  <Image
-                    className="aspect-[1/1] w-full object-cover"
-                    src={post.image}
-                    width={400}
-                    height={400}
-                    alt="user icon"
-                  />
+                  <div className="relative group overflow-hidden">
+                    <Image
+                      className="aspect-[1/1] w-full object-cover transition duration-200 group-hover:brightness-110"
+                      src={post.image}
+                      width={400}
+                      height={400}
+                      alt="user icon"
+                    />
+                    {caption && (
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-2">
+                        <p className="text-xs text-white truncate">{caption}</p>
+                      </div>
+                    )}
+                  </div>
                 </Link>
               );
             })}

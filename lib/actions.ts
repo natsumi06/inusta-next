@@ -267,13 +267,14 @@ export async function createPost(formData: FormData) {
 
   const blob = await put(imageFile.name, imageFile, {
     access: "public",
+    allowOverwrite: true,
   });
 
   const user = await prisma.user.findFirstOrThrow({
     where: { email },
   });
 
-  await prisma.post.create({
+  const post = await prisma.post.create({
     data: {
       caption,
       image: blob.url,
@@ -284,7 +285,7 @@ export async function createPost(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/posts");
   revalidatePath("/users");
-  redirect("/dashboard");
+  redirect(`/posts/${post.id}`);
 }
 
 /**

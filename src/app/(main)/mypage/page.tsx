@@ -10,7 +10,7 @@ import UserSkeleton from "@/app/components/skeletons/user-skeleton";
 export default function Page() {
   return (
     <>
-      <BreadCrumbs title="マイページ 🐾" />
+      <BreadCrumbs title="マイページ" description="あなたの投稿とプロフィール" />
       <Suspense fallback={<UserSkeleton />}>
         <Dashboard />
       </Suspense>

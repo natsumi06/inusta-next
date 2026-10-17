@@ -6,29 +6,28 @@
   --font-size-section-title: clamp(1.125rem, 1.8vw, 1.5rem);
   --font-size-page-title: clamp(1.5rem, 2.5vw, 2.25rem);
   --line-height-body: 1.7;
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* トンマナ「しろくろわんこ」のトークン（docs/design.md 参照） */
+@theme inline {
+  --color-ink: #1a1a1a;
+  --color-sub: #666660;
+  --color-line: #e6e6e0;
+  --color-base: #fafaf7;
+  --color-soft: #f0eee8;
+  --color-cheek: #ff8a9a;
+
+  --font-sans: var(--font-zen-kaku), sans-serif;
+  --font-heading: var(--font-kiwi-maru), serif;
+
+  --shadow-cheek: 0 3px 0 var(--color-cheek);
 }
 
 body {
   font-size: var(--font-size-body);
   line-height: var(--line-height-body);
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--color-ink);
+  background: var(--color-base);
 }
 
 .type-page-title {

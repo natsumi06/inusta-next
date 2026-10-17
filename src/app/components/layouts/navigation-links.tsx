@@ -1,35 +1,24 @@
 "use client";
 
 import NavigationLink from "@/app/components/layouts/navigation-link";
+import { HomeIcon, UsersIcon } from "@/app/components/layouts/navigation-icons";
 import { usePathname } from "next/navigation";
 
 export default function NavigationLinks() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-gray-100 bg-white px-4 sm:static sm:inset-auto sm:z-auto sm:ms-10 sm:h-auto sm:justify-normal sm:space-x-8 sm:border-0 sm:bg-transparent sm:px-0">
+    <div className="flex grow items-stretch gap-2">
       <NavigationLink
         href="/home"
         active={pathname === "/home"}
-        normalIcon="/icon/home/normal.svg"
-        hoverIcon="/icon/home/hover.svg"
-        alt="home"
+        icon={<HomeIcon />}
         label="ホーム"
       />
       <NavigationLink
-        href="/posts/new"
-        active={pathname === "/posts/new"}
-        normalIcon="/icon/post/normal.svg"
-        hoverIcon="/icon/post/hover.svg"
-        alt="post"
-        label="投稿作成"
-      />
-      <NavigationLink
         href="/users"
-        active={pathname === "/users"}
-        normalIcon="/icon/users/normal.svg"
-        hoverIcon="/icon/users/hover.svg"
-        alt="user"
+        active={pathname.startsWith("/users")}
+        icon={<UsersIcon />}
         label="ユーザー一覧"
       />
     </div>

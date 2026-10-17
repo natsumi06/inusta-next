@@ -7,7 +7,7 @@ import PostsList from "@/app/components/pages/posts/posts-list";
 export default async function Page() {
   return (
     <>
-      <BreadCrumbs title="ホーム 🐾" />
+      <BreadCrumbs title="ホーム" description="みんなの新着投稿" />
       <Suspense fallback={<PostsWithUserSkeleton />}>
         <Posts />
       </Suspense>

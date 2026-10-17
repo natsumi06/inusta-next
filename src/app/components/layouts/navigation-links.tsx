@@ -9,20 +9,20 @@ export default function NavigationLinks() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-gray-100 bg-white px-4 sm:static sm:inset-auto sm:z-auto sm:ms-10 sm:h-auto sm:justify-normal sm:space-x-8 sm:border-0 sm:bg-transparent sm:px-0">
       <NavigationLink
-        href="/posts"
-        active={pathname === "/posts"}
+        href="/home"
+        active={pathname === "/home"}
         normalIcon="/icon/home/normal.svg"
         hoverIcon="/icon/home/hover.svg"
         alt="home"
         label="ホーム"
       />
       <NavigationLink
-        href="/posts/create"
-        active={pathname === "/posts/create"}
+        href="/posts/new"
+        active={pathname === "/posts/new"}
         normalIcon="/icon/post/normal.svg"
         hoverIcon="/icon/post/hover.svg"
         alt="post"
-        label="投稿する"
+        label="投稿作成"
       />
       <NavigationLink
         href="/users"
@@ -30,7 +30,7 @@ export default function NavigationLinks() {
         normalIcon="/icon/users/normal.svg"
         hoverIcon="/icon/users/hover.svg"
         alt="user"
-        label="ユーザー"
+        label="ユーザー一覧"
       />
     </div>
   );

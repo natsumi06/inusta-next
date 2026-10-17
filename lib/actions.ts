@@ -124,7 +124,7 @@ export async function registerUser(
 
 /**
  * 投稿編集（本人の投稿のみ）
- * 編集後はダッシュボードを再検証してダッシュボードへ遷移
+ * 編集後はマイページを再検証してマイページへ遷移
  */
 export async function updatePost(id: string, formData: FormData) {
   const caption = formData.get("caption") as string;
@@ -144,14 +144,14 @@ export async function updatePost(id: string, formData: FormData) {
     data: { caption },
   });
 
-  revalidatePath("/dashboard");
-  revalidatePath("/posts");
-  redirect("/dashboard");
+  revalidatePath("/mypage");
+  revalidatePath("/home");
+  redirect("/mypage");
 }
 
 /**
  * 投稿削除（本人の投稿のみ）
- * 削除後はダッシュボードを再検証してダッシュボードへ遷移
+ * 削除後はマイページを再検証してマイページへ遷移
  */
 export async function deletePost(id: string, _formData: FormData) {
   const session = await auth();
@@ -165,10 +165,10 @@ export async function deletePost(id: string, _formData: FormData) {
     where: { id, userId: user.id },
   });
 
-  revalidatePath("/dashboard");
-  revalidatePath("/posts");
+  revalidatePath("/mypage");
+  revalidatePath("/home");
   revalidatePath("/users");
-  redirect("/dashboard");
+  redirect("/mypage");
 }
 
 /**
@@ -201,7 +201,7 @@ export async function createComment(postId: string, formData: FormData) {
   });
 
   revalidatePath(`/posts/${postId}`);
-  revalidatePath("/posts");
+  revalidatePath("/home");
   redirect(`/posts/${postId}`);
 }
 
@@ -209,7 +209,7 @@ export async function createComment(postId: string, formData: FormData) {
  * プロフィール編集
  * name/description を更新
  * 画像はフォームに file があれば Blob にアップして差し替え
- * 更新後はダッシュボードを再検証してダッシュボードへ遷移
+ * 更新後はマイページを再検証してマイページへ遷移
  */
 export async function updateMe(formData: FormData) {
   const session = await auth();
@@ -238,14 +238,14 @@ export async function updateMe(formData: FormData) {
     data,
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/mypage");
   revalidatePath("/users");
-  redirect("/dashboard");
+  redirect("/mypage");
 }
 
 /**
  * 投稿作成（画像アップロードあり）
- * 画像を Blob にアップ → 投稿保存 → ダッシュボード再検証 → ダッシュボードへ遷移
+ * 画像を Blob にアップ → 投稿保存 → マイページ再検証 → マイページへ遷移
  */
 export async function createPost(formData: FormData) {
   const session = await auth();
@@ -282,8 +282,8 @@ export async function createPost(formData: FormData) {
     },
   });
 
-  revalidatePath("/dashboard");
-  revalidatePath("/posts");
+  revalidatePath("/mypage");
+  revalidatePath("/home");
   revalidatePath("/users");
   redirect(`/posts/${post.id}`);
 }

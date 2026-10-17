@@ -18,7 +18,7 @@ export async function createPost(
   imagePath?: string,
 ): Promise<void> {
   // 新規投稿ページに移動
-  await page.goto('/posts/create');
+  await page.goto('/posts/new');
 
   // 画像をアップロード（必須フィールド）
   const fileInput = page.locator('input[type="file"]');
@@ -67,8 +67,8 @@ export async function editPost(
   await submitButton.waitFor({ state: 'visible', timeout: 5000 });
   await submitButton.click();
 
-  // ダッシュボードにリダイレクトされるまで待機
-  await page.waitForURL('/dashboard', { timeout: 15000 });
+  // マイページにリダイレクトされるまで待機
+  await page.waitForURL('/mypage', { timeout: 15000 });
 
   // その後、投稿詳細ページに移動して、更新されたキャプションを確認
   await page.goto(`/posts/${postId}`);
@@ -92,8 +92,8 @@ export async function deletePost(page: Page, postId: string): Promise<void> {
   await confirmButton.waitFor({ state: 'visible', timeout: 5000 });
   await confirmButton.click();
 
-  // ダッシュボードに戻るまで待機
-  await page.waitForURL('/dashboard', { timeout: 15000 });
+  // マイページに戻るまで待機
+  await page.waitForURL('/mypage', { timeout: 15000 });
 }
 
 /**
@@ -103,7 +103,7 @@ export async function assertPostExistsOnHome(
   page: Page,
   caption: string,
 ): Promise<void> {
-  await page.goto('/posts');
+  await page.goto('/home');
   await expect(page.locator(`text=${caption}`)).toBeVisible({ timeout: 5000 });
 }
 
@@ -114,7 +114,7 @@ export async function assertPostNotExistsOnHome(
   page: Page,
   caption: string,
 ): Promise<void> {
-  await page.goto('/posts');
+  await page.goto('/home');
   await expect(page.locator(`text=${caption}`)).not.toBeVisible({ timeout: 5000 });
 }
 
@@ -193,7 +193,7 @@ export async function getCommentCount(page: Page, postId: string): Promise<numbe
  * ホーム画面の投稿グリッドでコメント件数を確認
  */
 export async function getCommentCountOnHome(page: Page, caption: string): Promise<number> {
-  await page.goto('/posts');
+  await page.goto('/home');
   const postElement = page.locator(`text=${caption}`).first().locator('..');
   const commentCountElement = postElement.locator('text=/💬\\s*\\d+/');
   const countText = await commentCountElement.textContent();

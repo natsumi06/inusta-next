@@ -1,6 +1,6 @@
 import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
 import ProfileEditForm from "@/app/components/pages/profile/profile-form";
-import { fetchMe } from "./../../../../lib/apis";
+import { fetchMe } from "./../../../../../lib/apis";
 
 export default async function Page() {
   const user = await fetchMe();

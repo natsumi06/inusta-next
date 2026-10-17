@@ -13,7 +13,7 @@ type PageProps = {
 export default function Page({ params }: PageProps) {
   return (
     <>
-      <BreadCrumbs title="オーナー 🐾" />
+      <BreadCrumbs title="ユーザー詳細 🐾" />
       <Suspense fallback={<UserSkeleton />}>
         <UserDetail params={params} />
       </Suspense>

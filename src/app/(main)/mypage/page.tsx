@@ -52,7 +52,7 @@ async function Dashboard() {
                 <div className="absolute left-0 z-10 mt-2 w-52 origin-top-left divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg">
                   <div className="py-1">
                     <Link
-                      href="/profile"
+                      href="/mypage/edit"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       プロフィールを編集
@@ -88,7 +88,7 @@ async function Dashboard() {
                 投稿{user.posts.length}件
               </p>
               <Link
-                href="/profile"
+                href="/mypage/edit"
                 className="whitespace-nowrap rounded border px-2 py-1 text-sm font-semibold text-black hover:bg-gray-50"
               >
                 プロフィールを編集
@@ -130,7 +130,7 @@ async function Dashboard() {
             <p className="text-gray-500 text-lg">📸</p>
             <p className="text-gray-500">まだ投稿がありません</p>
             <Link
-              href="/posts/create"
+              href="/posts/new"
               className="mt-4 inline-block rounded bg-blue-600 text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700"
             >
               最初の投稿をする

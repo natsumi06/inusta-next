@@ -39,7 +39,7 @@ export async function registerAndLogin(
   await homeLink.click();
 
   // ホーム画面(/posts)に移動するまで待機
-  await page.waitForURL('/posts', { timeout: 15000 });
+  await page.waitForURL('/home', { timeout: 15000 });
 }
 
 /**
@@ -58,7 +58,7 @@ export async function login(page: Page, user: TestUser): Promise<void> {
   await submitButton.click();
 
   // ログイン後、ホーム画面にリダイレクト
-  await page.waitForURL('/posts', { timeout: 15000 });
+  await page.waitForURL('/home', { timeout: 15000 });
 }
 
 /**

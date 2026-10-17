@@ -73,7 +73,7 @@ test.describe('投稿機能のテスト', () => {
     await createPost(page1, caption);
 
     // ユーザーBでホーム画面を表示
-    await page2.goto('/posts');
+    await page2.goto('/home');
 
     // 投稿がグリッドの上部に表示されることを確認
     const posts = page2.locator('[data-testid="post-grid"] article, .grid article');
@@ -139,7 +139,7 @@ test.describe('投稿機能のテスト', () => {
       await editPost(page1, postId, editedCaption);
 
       // ユーザーBでホーム画面を表示
-      await page2.goto('/posts');
+      await page2.goto('/home');
 
       // 編集された投稿内容が表示されることを確認
       await expect(page2.locator(`text=${editedCaption}`)).toBeVisible();

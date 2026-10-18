@@ -30,9 +30,7 @@ export default function ProfileAvatar({
       <span
         className={clsx(
           "flex size-full items-center justify-center overflow-hidden rounded-full border-2 bg-soft",
-          unset && editable
-            ? "border-dashed border-[#9a9a92]"
-            : "border-ink"
+          unset && editable ? "border-dashed border-[#9a9a92]" : "border-ink",
         )}
       >
         {image ? (
@@ -62,10 +60,12 @@ export default function ProfileAvatar({
             "absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full",
             unset
               ? "size-8 border-[3px] border-white bg-ink text-white sm:size-9"
-              : "size-7 border-2 border-ink bg-white text-ink sm:size-8"
+              : "size-7 border-2 border-ink bg-white text-ink sm:size-8",
           )}
         >
-          <CameraIcon className={unset ? "size-[15px]" : "size-[13px] sm:size-[15px]"} />
+          <CameraIcon
+            className={unset ? "size-[15px]" : "size-[13px] sm:size-[15px]"}
+          />
         </span>
       )}
     </span>

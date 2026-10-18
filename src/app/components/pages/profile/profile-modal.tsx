@@ -13,12 +13,18 @@ import { CloseIcon } from "@/app/components/layouts/navigation-icons";
 export default function ProfileModal({
   open,
   onClose,
+  onClosed,
   title,
+  size = "small",
   children,
 }: {
   open: boolean;
   onClose: () => void;
+  /** 閉じる動きが終わったあとに呼ぶ（URL つきのモーダルで前の画面にもどるため） */
+  onClosed?: () => void;
   title: string;
+  /** small: 1項目だけの編集（スマホは下からのシート）／ large: 複数項目の編集（スマホは全画面） */
+  size?: "small" | "large";
   children: React.ReactNode;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -48,24 +54,39 @@ export default function ProfileModal({
       }}
       onAnimationEnd={(event) => {
         if (event.target !== dialogRef.current) return;
+        // 暗幕（::backdrop）の動きの終わりも同じ dialog に届くので、本体の分だけで閉じる
+        if (event.nativeEvent.pseudoElement) return;
         if (isClosing) {
           dialogRef.current?.close();
           setIsClosing(false);
+          onClosed?.();
         }
       }}
       className={clsx(
-        "mx-0 mb-0 mt-auto w-full max-w-none rounded-t-3xl border-t-2 border-ink bg-white pb-7 text-ink backdrop:bg-ink/45",
-        "sm:m-auto sm:w-[calc(100%-2rem)] sm:max-w-[480px] sm:rounded-3xl sm:border-2 sm:pb-0 sm:shadow-[0_5px_0_var(--color-cheek)]",
+        "mx-0 mb-0 w-full max-w-none bg-white text-ink backdrop:bg-ink/45",
+        "sm:m-auto sm:w-[calc(100%-2rem)] sm:rounded-3xl sm:border-2 sm:border-ink sm:pb-0 sm:shadow-[0_5px_0_var(--color-cheek)]",
+        size === "small"
+          ? "mt-auto rounded-t-3xl border-t-2 border-ink pb-7 sm:max-w-[480px]"
+          : "mt-0 h-dvh max-h-none open:flex open:flex-col sm:h-fit sm:max-h-[calc(100dvh-4rem)] sm:max-w-[560px]",
         isClosing
           ? "yuru-modal-closing animate-yuru-sheet-down backdrop:animate-yuru-fade-out sm:animate-yuru-lift-out"
-          : "yuru-modal animate-yuru-sheet-up backdrop:animate-yuru-fade-in sm:animate-yuru-drop-in"
+          : "yuru-modal animate-yuru-sheet-up backdrop:animate-yuru-fade-in sm:animate-yuru-drop-in",
       )}
     >
-      <span
-        aria-hidden="true"
-        className="mx-auto mt-2 block h-1 w-10 rounded-full bg-[#d6d5ce] sm:hidden"
-      />
-      <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] items-center px-2 pb-2 pt-1 sm:flex sm:justify-between sm:border-b sm:border-line sm:py-3 sm:pl-7 sm:pr-4">
+      {size === "small" && (
+        <span
+          aria-hidden="true"
+          className="mx-auto mt-2 block h-1 w-10 rounded-full bg-[#d6d5ce] sm:hidden"
+        />
+      )}
+      <div
+        className={clsx(
+          "grid grid-cols-[44px_minmax(0,1fr)_44px] items-center px-2 sm:flex sm:justify-between sm:border-b sm:border-line sm:py-3 sm:pl-7 sm:pr-4",
+          size === "small"
+            ? "pb-2 pt-1"
+            : "sticky top-0 z-10 border-b border-line bg-white py-1.5",
+        )}
+      >
         <span className="sm:hidden" />
         <h2 className="text-center font-heading text-lg font-medium sm:text-left sm:text-xl">
           {title}
@@ -92,13 +113,22 @@ export function ProfileModalActions({
   onCancel,
   pending,
   disabled,
+  sticky = false,
 }: {
   onCancel: () => void;
   pending: boolean;
   disabled?: boolean;
+  /** 下に固定する（全画面のときに、スクロールしても保存ボタンが見えるように） */
+  sticky?: boolean;
 }) {
   return (
-    <div className="flex gap-3 px-5 pt-4 sm:justify-end sm:px-7 sm:pb-6">
+    <div
+      className={clsx(
+        "flex gap-3 px-5 pt-4 sm:justify-end sm:px-7 sm:pb-6",
+        sticky &&
+          "sticky bottom-0 border-t border-line bg-white pb-5 sm:border-line",
+      )}
+    >
       <button
         type="button"
         onClick={onCancel}

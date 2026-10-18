@@ -68,18 +68,22 @@ async function Dashboard() {
             プロフィールを編集
           </Link>
           <div className="col-span-3 flex flex-col items-start gap-1 sm:col-span-1 sm:col-start-2">
-            {user.description && (
+            {user.description ? (
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink sm:text-[15px]">
                 {user.description}
               </p>
+            ) : (
+              <BioEditModal />
             )}
-            <BioEditModal description={user.description} />
           </div>
         </div>
       </section>
 
       <section aria-labelledby="my-posts" className="px-4 pb-8 pt-5 sm:px-0">
-        <h2 id="my-posts" className="mb-3 text-[15px] font-bold text-ink sm:text-[16px]">
+        <h2
+          id="my-posts"
+          className="mb-3 text-[15px] font-bold text-ink sm:text-[16px]"
+        >
           あなたの投稿
         </h2>
         {user.posts.length > 0 ? (

@@ -2,10 +2,7 @@
 
 import { useActionState, useState } from "react";
 import ProfileModal, { ProfileModalActions } from "./profile-modal";
-import {
-  PencilIcon,
-  PlusIcon,
-} from "@/app/components/layouts/navigation-icons";
+import { PlusIcon } from "@/app/components/layouts/navigation-icons";
 import {
   updateBio,
   type ProfileModalState,
@@ -15,16 +12,12 @@ const MAX_LENGTH = 500;
 
 /**
  * マイページの自己紹介の入口
- * 空なら「＋ 自己紹介を追加」、書いてあれば「✎ 自己紹介を変更」。どちらも自己紹介だけを変えるモーダルが開く
+ * 自己紹介が空のときだけ「＋ 自己紹介を追加」を出し、自己紹介だけを書くモーダルを開く
+ * 書いたあとに直すときは「プロフィールを編集」から
  */
-export default function BioEditModal({
-  description,
-}: {
-  description: string | null;
-}) {
+export default function BioEditModal() {
   const [open, setOpen] = useState(false);
-  const [length, setLength] = useState(description?.length ?? 0);
-  const hasBio = !!description;
+  const [length, setLength] = useState(0);
 
   const [state, action, isPending] = useActionState(
     async (prev: ProfileModalState, formData: FormData) => {
@@ -32,44 +25,33 @@ export default function BioEditModal({
       if (result.ok) setOpen(false);
       return result;
     },
-    { message: null }
+    { message: null },
   );
 
   const openModal = () => {
-    setLength(description?.length ?? 0);
+    setLength(0);
     setOpen(true);
   };
 
   return (
     <>
-      {hasBio ? (
-        <button
-          type="button"
-          onClick={openModal}
-          className="-ml-2 inline-flex h-9 items-center gap-1.5 rounded-full pl-2 pr-3 text-[13px] font-bold text-sub transition hover:bg-soft hover:text-ink"
+      <button
+        type="button"
+        onClick={openModal}
+        className="inline-flex h-10 items-center gap-2 rounded-full bg-soft pl-2.5 pr-4 text-sm font-bold text-ink transition hover:bg-[#e6e4dc]"
+      >
+        <span
+          aria-hidden="true"
+          className="flex size-[22px] items-center justify-center rounded-full bg-ink text-white"
         >
-          <PencilIcon className="size-[15px]" />
-          自己紹介を変更
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={openModal}
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-soft pl-2.5 pr-4 text-sm font-bold text-ink transition hover:bg-[#e6e4dc]"
-        >
-          <span
-            aria-hidden="true"
-            className="flex size-[22px] items-center justify-center rounded-full bg-ink text-white"
-          >
-            <PlusIcon className="size-3" />
-          </span>
-          自己紹介を追加
-        </button>
-      )}
+          <PlusIcon className="size-3" />
+        </span>
+        自己紹介を追加
+      </button>
       <ProfileModal
         open={open}
         onClose={() => setOpen(false)}
-        title={hasBio ? "自己紹介を変更" : "自己紹介を追加"}
+        title="自己紹介を追加"
       >
         <form action={action}>
           <div className="flex flex-col gap-1.5 px-5 pt-2 sm:px-7 sm:pt-5">
@@ -81,7 +63,7 @@ export default function BioEditModal({
               name="description"
               rows={5}
               maxLength={MAX_LENGTH}
-              defaultValue={description ?? ""}
+              defaultValue=""
               autoFocus
               onChange={(e) => setLength(e.target.value.length)}
               placeholder="例）柴犬のころ（3さい）と暮らしています。おさんぽ写真をよくのせます。"

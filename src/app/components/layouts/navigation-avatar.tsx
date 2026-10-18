@@ -1,6 +1,5 @@
 import Image from "next/image";
 import clsx from "clsx";
-import { UserIcon } from "@/app/components/layouts/navigation-icons";
 
 type NavigationAvatarProps = {
   image: string | null | undefined;
@@ -15,11 +14,18 @@ export default function NavigationAvatar({
     return (
       <span
         className={clsx(
-          "flex items-center justify-center rounded-full bg-soft text-sub",
+          "flex items-center justify-center overflow-hidden rounded-full bg-soft",
           className
         )}
       >
-        <UserIcon className="size-4/5" />
+        {/* アイコン未設定のときは白黒わんこ（登録時のプロフィール設定と同じ） */}
+        <Image
+          src="/illustrations/dog-sit.png"
+          alt=""
+          width={64}
+          height={60}
+          className="mt-[10%] h-auto w-[70%] mix-blend-multiply"
+        />
       </span>
     );
   }

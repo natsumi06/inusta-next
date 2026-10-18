@@ -6,16 +6,21 @@ import { AuthError } from "next-auth";
 /**
  * Server Actions
  * - registerUser: 会員登録（重複チェック・bcryptハッシュ）
+ * - saveDisplayName / saveIcon / saveBio: 会員登録後のプロフィール設定（1画面1問）
  * - updatePost: 投稿編集（本人の投稿のみ）
  * - deletePost: 投稿削除（本人の投稿のみ）
  * - createComment: コメント作成（投稿存在チェック）
  * - updateMe: プロフィール編集（name/description/画像差し替え対応）
  * - createPost: 投稿作成（Vercel Blobへの画像アップロード込み）
+ * - consumeWelcome: 歓迎モーダルの表示済み処理（印のCookieを消す）
  */
 
 import prisma from "./../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { WELCOME_COOKIE } from "./welcome";
+import { provisionalName } from "./display-name";
 import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
 
@@ -29,7 +34,6 @@ const ALLOWED_IMAGE_TYPES = [
 
 const RegisterUserSchema = z
   .object({
-    name: z.string().min(1, "ユーザ名は必須です。"),
     email: z.string().email("メールアドレスの形式が正しくありません。"),
     password: z.string().min(8, "パスワードは8文字以上で設定してください。"),
     passwordConfirmation: z
@@ -60,7 +64,6 @@ const RegisterUserSchema = z
 
 type RegisterUserState = {
   errors?: {
-    name?: string[];
     email?: string[];
     password?: string[];
     passwordConfirmation?: string[];
@@ -82,7 +85,6 @@ export async function registerUser(
   formData: FormData
 ): Promise<RegisterUserState> {
   const validatedFields = await RegisterUserSchema.safeParseAsync({
-    name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
     passwordConfirmation: formData.get("passwordConfirmation"),
@@ -95,7 +97,9 @@ export async function registerUser(
     };
   }
 
-  const { name, email, password } = validatedFields.data;
+  const { email, password } = validatedFields.data;
+  // 表示名はつぎの画面で決めてもらう。それまではメールの@より前を仮の名前にする
+  const name = provisionalName(email);
 
   const bcryptedPassword = await bcrypt.hash(password, 10);
   try {
@@ -113,13 +117,110 @@ export async function registerUser(
 
   revalidatePath("/users");
 
+  // はじめてのホームで歓迎モーダルを出すための印
+  (await cookies()).set(WELCOME_COOKIE, "1", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+
   await signIn("credentials", {
     email,
     password,
-    redirectTo: "/register/complete",
+    redirectTo: "/register/name?registered=1",
   });
 
+  redirect("/register/name?registered=1");
+}
+
+type ProfileStepState = {
+  message?: string | null;
+};
+
+async function requireEmail() {
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) redirect("/login");
+  return email;
+}
+
+/**
+ * 会員登録後 1問目: 表示名（必須）
+ */
+export async function saveDisplayName(
+  _state: ProfileStepState,
+  formData: FormData
+): Promise<ProfileStepState> {
+  const email = await requireEmail();
+
+  const name = ((formData.get("name") as string) ?? "").trim();
+  if (!name) return { message: "表示名を入力してください。" };
+  if (name.length > 30) return { message: "表示名は30文字以内にしてください。" };
+
+  await prisma.user.update({ where: { email }, data: { name } });
+
+  revalidatePath("/users");
+  revalidatePath("/mypage");
+  redirect("/register/icon");
+}
+
+/**
+ * 会員登録後 2問目: アイコン（写真を選ばなければそのまま次へ）
+ */
+export async function saveIcon(
+  _state: ProfileStepState,
+  formData: FormData
+): Promise<ProfileStepState> {
+  const email = await requireEmail();
+
+  const imageFile = formData.get("image") as File | null;
+  if (imageFile && imageFile.size > 0) {
+    if (!ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
+      return { message: "対応する形式：JPEG, PNG, WebP, GIF" };
+    }
+    if (imageFile.size > MAX_IMAGE_SIZE) {
+      return { message: "画像は5MB以下にしてください。" };
+    }
+    const blob = await put(imageFile.name, imageFile, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+    await prisma.user.update({ where: { email }, data: { image: blob.url } });
+
+    revalidatePath("/users");
+    revalidatePath("/mypage");
+  }
+
+  redirect("/register/bio");
+}
+
+/**
+ * 会員登録後 3問目: 自己紹介
+ */
+export async function saveBio(
+  _state: ProfileStepState,
+  formData: FormData
+): Promise<ProfileStepState> {
+  const email = await requireEmail();
+
+  const description = ((formData.get("description") as string) ?? "").trim();
+  if (description.length > 500) {
+    return { message: "自己紹介は500文字以内にしてください。" };
+  }
+
+  await prisma.user.update({ where: { email }, data: { description } });
+
+  revalidatePath("/users");
+  revalidatePath("/mypage");
   redirect("/register/complete");
+}
+
+/**
+ * 歓迎モーダルを表示したら印を消す（リロードや再訪では出さない）
+ */
+export async function consumeWelcome() {
+  (await cookies()).delete(WELCOME_COOKIE);
 }
 
 /**

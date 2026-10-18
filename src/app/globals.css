@@ -16,11 +16,123 @@
   --color-base: #fafaf7;
   --color-soft: #f0eee8;
   --color-cheek: #ff8a9a;
+  --color-ok: #1e7f46;
 
   --font-sans: var(--font-zen-kaku), sans-serif;
   --font-heading: var(--font-kiwi-maru), serif;
 
   --shadow-cheek: 0 3px 0 var(--color-cheek);
+}
+
+/* 動き: 「ゆる」なので一般的な速さより遅め（docs/design.md「動き」参照） */
+:root {
+  --duration-yuru-quick: 250ms; /* ホバー・押したときの反応 */
+  --duration-yuru: 450ms; /* 閉じる・消える */
+  --duration-yuru-slow: 800ms; /* モーダルなどが現れる */
+}
+
+@theme {
+  --ease-yuru: cubic-bezier(0.33, 1, 0.68, 1);
+
+  --animate-yuru-drop-in: yuru-drop-in var(--duration-yuru-slow) var(--ease-yuru) both;
+  --animate-yuru-lift-out: yuru-lift-out var(--duration-yuru) ease-in both;
+  --animate-yuru-fade-in: yuru-fade-in var(--duration-yuru-slow) var(--ease-yuru) both;
+  --animate-yuru-fade-out: yuru-fade-out var(--duration-yuru) ease-in both;
+
+  /* 上からふわっと降りてきて、少し沈んでから止まる */
+  @keyframes yuru-drop-in {
+    0% {
+      opacity: 0;
+      transform: translateY(-96px);
+    }
+    75% {
+      opacity: 1;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes yuru-lift-out {
+    to {
+      opacity: 0;
+      transform: translateY(-32px);
+    }
+  }
+  @keyframes yuru-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes yuru-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/* 動きを減らす設定の人には、移動なしのフェードだけにする */
+/*
+ * 会員登録後のおさんぽ進捗（walk-progress.tsx）
+ * わんこが前の点から今の点まで歩き、線もいっしょに伸びる。
+ * --walk-from / --walk-to は要素の style で渡す
+ */
+@keyframes walk-move {
+  from {
+    left: var(--walk-from);
+  }
+  to {
+    left: var(--walk-to);
+  }
+}
+@keyframes walk-line {
+  from {
+    width: var(--walk-from);
+  }
+}
+/* 絵は左向きなので、反転して右（ゴール）を向かせたまま跳ねる */
+@keyframes walk-hop {
+  0%,
+  100% {
+    transform: scaleX(-1) translateY(0);
+  }
+  50% {
+    transform: scaleX(-1) translateY(-4px);
+  }
+}
+@keyframes goal-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+@layer components {
+  .walk-dog {
+    animation:
+      walk-move 1.6s var(--ease-yuru) both,
+      walk-hop 0.4s ease-in-out 4;
+  }
+  .walk-line {
+    animation: walk-line 1.6s var(--ease-yuru) both;
+  }
+  .walk-goal {
+    animation: goal-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 1.4s both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .walk-dog,
+  .walk-line,
+  .walk-goal {
+    animation: none;
+  }
+  .animate-yuru-drop-in {
+    animation-name: yuru-fade-in;
+  }
+  .animate-yuru-lift-out {
+    animation-name: yuru-fade-out;
+  }
 }
 
 body {

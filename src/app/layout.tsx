@@ -1,20 +1,6 @@
 import type { Metadata } from "next";
-import { Kiwi_Maru, Zen_Kaku_Gothic_New } from "next/font/google";
 import "./globals.css";
-
-const zenKaku = Zen_Kaku_Gothic_New({
-  variable: "--font-zen-kaku",
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  preload: false,
-});
-
-const kiwiMaru = Kiwi_Maru({
-  variable: "--font-kiwi-maru",
-  weight: ["400", "500"],
-  subsets: ["latin"],
-  preload: false,
-});
+import { kiwiMaru, zenKaku } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",

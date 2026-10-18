@@ -94,7 +94,7 @@ function HomeMock() {
         <Image src="/logo.png" alt="" width={80} height={30} className="h-3.5 w-auto" />
       </div>
       <div className="px-2.5 py-2 md:px-4 md:py-3.5">
-        <p className="mb-1.5 font-heading text-xs md:mb-2.5 md:text-[15px]">
+        <p className="mb-1.5 font-heading text-xs font-medium md:mb-2.5 md:text-[15px]">
           ホーム{" "}
           <span className="font-sans text-[9px] text-sub">わんともの新着投稿</span>
         </p>

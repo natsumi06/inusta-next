@@ -10,12 +10,15 @@ export default function DiscardConfirm({
   open,
   title,
   description,
+  keepLabel = "書きつづける",
   onKeep,
   onDiscard,
 }: {
   open: boolean;
   title: string;
   description: string;
+  /** 主ボタン（続けるほう）の文字 */
+  keepLabel?: string;
   onKeep: () => void;
   onDiscard: () => void;
 }) {
@@ -65,7 +68,7 @@ export default function DiscardConfirm({
           onClick={onKeep}
           className="h-12 rounded-full bg-ink text-[15px] font-bold text-white shadow-cheek transition hover:translate-y-px hover:shadow-none"
         >
-          書きつづける
+          {keepLabel}
         </button>
         <button
           type="button"

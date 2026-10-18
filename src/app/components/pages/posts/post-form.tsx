@@ -14,7 +14,12 @@ import {
 import clsx from "clsx";
 import { ProfileModalActions } from "@/app/components/pages/profile/profile-modal";
 import { CameraIcon } from "@/app/components/layouts/navigation-icons";
-import { createPost, type PostCreateState } from "./../../../../../lib/actions";
+import {
+  createPost,
+  updatePost,
+  type PostCreateState,
+  type PostUpdateState,
+} from "./../../../../../lib/actions";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -27,47 +32,64 @@ function checkFile(file: File) {
   return null;
 }
 
+type PostFormState = PostCreateState & PostUpdateState;
+
 /**
- * 投稿作成のフォーム（写真・ひとこと）
- * PC のモーダル、スマホの全画面、直接開いたときの画面で共通に使う
+ * 投稿の作成・編集のフォーム（写真・ひとこと）
+ * PC のモーダル、スマホの全画面、直接開いたときの画面で共通に使う。
+ * post を渡すと編集になり、いまの写真とひとことが入った状態で始まる
  */
-export default function PostNewForm({
+export default function PostForm({
+  post,
   onCancel,
-  onPosted,
+  onDone,
   onDirtyChange,
   sticky = false,
 }: {
+  /** 編集する投稿。なければ新しく投稿する */
+  post?: { id: string; image: string; caption: string | null };
   onCancel: () => void;
-  /** 投稿できたとき。投稿の id を渡す */
-  onPosted: (postId: string) => void;
+  /** 投稿・保存できたとき。投稿の id を渡す */
+  onDone: (postId: string) => void;
   /** 書きかけかどうか（閉じるときの確認に使う） */
   onDirtyChange?: (dirty: boolean) => void;
   /** 投稿ボタンを下に固定する */
   sticky?: boolean;
 }) {
-  const [preview, setPreview] = useState<string | null>(null);
+  const initialCaption = post?.caption ?? "";
+  const [preview, setPreview] = useState<string | null>(post?.image ?? null);
+  /** 写真を選び直したか（編集で、いまの写真のままなら送らない） */
+  const [photoPicked, setPhotoPicked] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
-  const [caption, setCaption] = useState("");
+  const [caption, setCaption] = useState(initialCaption);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [state, action, isPending] = useActionState(
-    async (prev: PostCreateState, formData: FormData) => {
+    async (prev: PostFormState, formData: FormData): Promise<PostFormState> => {
+      if (post) {
+        const result = await updatePost(post.id, prev, formData);
+        if (result.ok) onDone(post.id);
+        return result;
+      }
       const result = await createPost(prev, formData);
-      if (result.postId) onPosted(result.postId);
+      if (result.postId) onDone(result.postId);
       return result;
     },
     {},
   );
 
-  const dirty = !!preview || caption.trim().length > 0;
+  const dirty = post
+    ? photoPicked || caption !== initialCaption
+    : !!preview || caption.trim().length > 0;
   useEffect(() => {
     onDirtyChange?.(dirty);
   }, [dirty, onDirtyChange]);
 
   useEffect(() => {
     return () => {
-      if (preview) URL.revokeObjectURL(preview);
+      // 選んだ写真のプレビューだけ片づける（編集のいまの写真は URL のまま）
+      if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
     };
   }, [preview]);
 
@@ -80,6 +102,7 @@ export default function PostNewForm({
       return false;
     }
     setPreview(URL.createObjectURL(file));
+    setPhotoPicked(true);
     return true;
   };
 
@@ -128,7 +151,7 @@ export default function PostNewForm({
           <div className="relative aspect-square w-full self-center sm:w-[300px]">
             <Image
               src={preview}
-              alt="選んだ写真"
+              alt={photoPicked || !post ? "選んだ写真" : "いまの写真"}
               fill
               unoptimized
               className="rounded-xl object-cover"
@@ -219,11 +242,11 @@ export default function PostNewForm({
       </div>
       <ProfileModalActions
         onCancel={onCancel}
-        pending={isPending || !!state.postId}
+        pending={isPending || !!state.postId || !!state.ok}
         disabled={!preview}
         sticky={sticky}
-        submitLabel="投稿する"
-        pendingLabel="投稿しています…"
+        submitLabel={post ? "保存する" : "投稿する"}
+        pendingLabel={post ? "保存しています…" : "投稿しています…"}
       />
     </form>
   );

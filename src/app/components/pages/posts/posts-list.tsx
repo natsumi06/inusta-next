@@ -5,22 +5,9 @@ import Link from "next/link";
 import { loadMorePosts } from "../../../../../lib/actions";
 import { useEffect, useRef, useState } from "react";
 import Loader from "../../loaders/loader";
-
-function getRelativeTime(date: Date | string): string {
-  const now = new Date();
-  const postDate = typeof date === "string" ? new Date(date) : date;
-  const diffMs = now.getTime() - postDate.getTime();
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffMins < 1) return "今";
-  if (diffMins < 60) return `${diffMins}分前`;
-  if (diffHours < 24) return `${diffHours}時間前`;
-  if (diffDays < 7) return `${diffDays}日前`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}週前`;
-  return postDate.toLocaleDateString("ja-JP");
-}
+import NavigationAvatar from "@/app/components/layouts/navigation-avatar";
+import { CommentIcon } from "@/app/components/layouts/navigation-icons";
+import { getRelativeTime } from "../../../../../lib/relative-time";
 
 type Post = {
   id: string;
@@ -88,79 +75,77 @@ export default function PostsList({
   }, [hasMoreContent, isLoading, posts.length]);
 
   return (
-    <div className="mx-auto my-4 w-full bg-white px-4 sm:my-8 sm:max-w-5xl sm:px-0">
-      <div className="grid grid-cols-2 gap-1 sm:grid-cols-3" data-testid="post-grid">
-        {posts.map((post) => {
-          const caption = post.caption
-            ? post.caption.length > 50
-              ? post.caption.substring(0, 50) + "..."
-              : post.caption
-            : "";
-          return (
-            <Link key={post.id} href={`/posts/${post.id}`}>
-              <article className="relative group overflow-hidden">
-                <Image
-                  className="aspect-[1/1] w-full object-cover transition duration-200 group-hover:brightness-110 group-hover:contrast-90"
-                  src={post.image}
-                  alt="posts"
-                  width={400}
-                  height={400}
-                />
-
-                <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                <div className="absolute right-2 top-1 hidden rounded-full p-1 group-hover:block">
-                  🐾
-                </div>
-
-                <div className="block">
-                  <div className="p-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        {post.user.image && (
-                          <Image
-                            className="block aspect-square size-5 rounded-full object-cover"
-                            src={post.user.image}
-                            width={32}
-                            height={32}
-                            alt="user icon"
-                          />
-                        )}
-                        <p className="ml-1 text-xs font-semibold text-black truncate">
-                          {post.user.name}
-                        </p>
-                      </div>
-                      <p className="text-xs text-gray-500 flex-shrink-0 ml-1">
-                        {getRelativeTime(post.createdAt)}
-                      </p>
-                    </div>
-                    {caption && (
-                      <p className="text-xs text-gray-600 truncate mb-1">
-                        {caption}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-500">
-                      💬 {post._count.comments}
+    <div className="mx-auto w-full px-4 py-4 sm:max-w-5xl sm:px-6 sm:py-8">
+      <div
+        className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5"
+        data-testid="post-grid"
+      >
+        {posts.map((post) => (
+          <Link
+            key={post.id}
+            href={`/posts/${post.id}`}
+            className="group overflow-hidden rounded-xl border border-line bg-white transition-colors duration-[var(--duration-yuru-quick)] hover:border-ink"
+          >
+            <article>
+              <Image
+                className="aspect-square w-full object-cover"
+                src={post.image}
+                alt={`${post.user.name}さんの投稿`}
+                width={400}
+                height={400}
+              />
+              <div className="flex flex-col gap-1 px-2.5 pb-2.5 pt-2 sm:gap-1.5 sm:px-3.5 sm:pb-3.5 sm:pt-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+                    <NavigationAvatar
+                      image={post.user.image}
+                      className="size-[22px] shrink-0 border-[1.5px] border-ink sm:size-7 sm:border-2"
+                    />
+                    <p className="truncate text-xs font-bold sm:text-sm">
+                      {post.user.name}
                     </p>
                   </div>
+                  <p className="hidden shrink-0 text-xs text-sub sm:block">
+                    {getRelativeTime(post.createdAt)}
+                  </p>
                 </div>
-              </article>
-            </Link>
-          );
-        })}
+                {/* ひとことがなくても高さをそろえる */}
+                <p className="min-h-[18px] truncate text-xs leading-normal sm:min-h-[21px] sm:text-sm">
+                  {post.caption}
+                </p>
+                <div className="flex items-center justify-between text-[11px] text-sub sm:text-xs">
+                  <span className="inline-flex items-center gap-1">
+                    <CommentIcon className="size-3.5 sm:size-4" />
+                    <span className="sr-only sm:not-sr-only">コメント</span>
+                    {post._count.comments}
+                  </span>
+                  <span className="sm:hidden">
+                    {getRelativeTime(post.createdAt)}
+                  </span>
+                </div>
+              </div>
+            </article>
+          </Link>
+        ))}
       </div>
       {hasMoreContent && (
         <div
           ref={loadMoreTriggerRef}
-          className={`relative text-center text-gray-500 ${
-            isLoading ? "h-32" : "h-8"
-          }`}
+          className={`relative text-center ${isLoading ? "h-32" : "h-8"}`}
         >
           {isLoading && <Loader />}
         </div>
       )}
       {!hasMoreContent && posts.length > 0 && (
-        <div className="mt-8 text-center pb-8 text-gray-500">
-          すべての投稿を表示しています
+        <div className="mt-10 flex flex-col items-center gap-1.5 pb-8 text-center">
+          <Image
+            src="/illustrations/dog-walk.png"
+            alt=""
+            width={335}
+            height={180}
+            className="h-auto w-[88px] mix-blend-multiply"
+          />
+          <p className="text-sm text-sub">新着投稿はここまでです</p>
         </div>
       )}
     </div>

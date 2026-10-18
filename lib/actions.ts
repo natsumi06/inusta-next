@@ -7,7 +7,7 @@ import { AuthError } from "next-auth";
  * Server Actions
  * - registerUser: 会員登録（重複チェック・bcryptハッシュ）
  * - saveDisplayName / saveIcon / saveBio: 会員登録後のプロフィール設定（1画面1問）
- * - updatePost: 投稿編集（本人の投稿のみ）
+ * - updatePost: 投稿編集（本人の投稿のみ。写真の差し替えとひとこと）
  * - deletePost: 投稿削除（本人の投稿のみ）
  * - createComment: コメント作成（投稿存在チェック）
  * - updateProfile: プロフィール編集（アイコン・表示名・自己紹介）
@@ -25,12 +25,22 @@ import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const CAPTION_MAX_LENGTH = 500;
 const ALLOWED_IMAGE_TYPES = [
   "image/jpeg",
   "image/png",
   "image/webp",
   "image/gif",
 ];
+
+/** 投稿の写真として使えるかを調べる。使えないときは理由を返す */
+function checkImage(file: File) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return "対応する形式：JPEG, PNG, WebP, GIF";
+  }
+  if (file.size > MAX_IMAGE_SIZE) return "写真は5MB以下にしてください。";
+  return null;
+}
 
 const RegisterUserSchema = z
   .object({
@@ -280,31 +290,64 @@ export async function consumeWelcome() {
   (await cookies()).delete(WELCOME_COOKIE);
 }
 
-/**
- * 投稿編集（本人の投稿のみ）
- * 編集後はマイページを再検証してマイページへ遷移
- */
-export async function updatePost(id: string, formData: FormData) {
-  const caption = formData.get("caption") as string;
-  const session = await auth();
-  const email = session?.user?.email || "";
+export type PostUpdateState = {
+  errors?: { image?: string[]; caption?: string[] };
+  message?: string | null;
+  /** 保存できたら true */
+  ok?: boolean;
+};
 
-  if (!caption) {
-    throw new Error("キャプションが未入力です。");
+/**
+ * 投稿編集（本人の投稿のみ）: 写真とひとことを変える
+ * 写真は選び直したときだけ差し替える。保存できたら ok を返す（閉じるのは画面側）
+ */
+export async function updatePost(
+  id: string,
+  _state: PostUpdateState,
+  formData: FormData,
+): Promise<PostUpdateState> {
+  const email = await requireEmail();
+  const caption = ((formData.get("caption") as string) ?? "").trim();
+  const imageFile = formData.get("image");
+  const hasImage = imageFile instanceof File && imageFile.size > 0;
+
+  if (hasImage) {
+    const imageError = checkImage(imageFile);
+    if (imageError) return { errors: { image: [imageError] } };
+  }
+  if (caption.length > CAPTION_MAX_LENGTH) {
+    return { errors: { caption: ["ひとことは500文字以内にしてください。"] } };
   }
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: { email },
+  const post = await prisma.post.findFirst({
+    where: { id, user: { email } },
+    select: { id: true, userId: true },
   });
+  if (!post) return { message: "この投稿は編集できません。" };
 
-  await prisma.post.update({
-    where: { id, userId: user.id },
-    data: { caption },
-  });
+  const data: { caption: string; image?: string } = { caption };
+  if (hasImage) {
+    try {
+      const blob = await put(imageFile.name, imageFile, {
+        access: "public",
+        addRandomSuffix: true,
+      });
+      data.image = blob.url;
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      return {
+        message: "写真をアップロードできませんでした。もう一度お試しください。",
+      };
+    }
+  }
 
+  await prisma.post.update({ where: { id: post.id }, data });
+
+  revalidatePath(`/posts/${post.id}`);
+  revalidatePath(`/users/${post.userId}`);
   revalidatePath("/mypage");
   revalidatePath("/home");
-  redirect("/mypage");
+  return { ok: true };
 }
 
 /**
@@ -334,7 +377,7 @@ export async function deletePost(id: string, _formData: FormData) {
  * 作成後は該当投稿ページを再検証して同ページへ遷移
  */
 export async function createComment(postId: string, formData: FormData) {
-  const text = formData.get("text") as string;
+  const text = ((formData.get("text") as string) ?? "").trim();
   const session = await auth();
   const email = session?.user?.email || "";
 
@@ -425,7 +468,6 @@ export type PostCreateState = {
   postId?: string;
 };
 
-const CAPTION_MAX_LENGTH = 500;
 
 /**
  * 投稿作成（画像アップロードあり）
@@ -442,12 +484,8 @@ export async function createPost(
   if (!(imageFile instanceof File) || imageFile.size === 0) {
     return { errors: { image: ["写真を選んでください。"] } };
   }
-  if (!ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
-    return { errors: { image: ["対応する形式：JPEG, PNG, WebP, GIF"] } };
-  }
-  if (imageFile.size > MAX_IMAGE_SIZE) {
-    return { errors: { image: ["写真は5MB以下にしてください。"] } };
-  }
+  const imageError = checkImage(imageFile);
+  if (imageError) return { errors: { image: [imageError] } };
   if (caption.length > CAPTION_MAX_LENGTH) {
     return { errors: { caption: ["ひとことは500文字以内にしてください。"] } };
   }

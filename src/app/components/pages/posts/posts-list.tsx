@@ -113,7 +113,7 @@ export default function PostsList({
                 </div>
 
                 <div className="block">
-                  <div className="border p-1">
+                  <div className="p-1">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
                         {post.user.image && (

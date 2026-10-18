@@ -9,11 +9,11 @@ export default function EmptyPosts({
   return (
     <div className="flex flex-col items-center gap-2 px-4 py-12 text-center sm:rounded-2xl sm:border sm:border-line sm:bg-white">
       <Image
-        src="/illustrations/dog-sit.png"
+        src="/illustrations/dog-sleep.png"
         alt=""
-        width={165}
-        height={155}
-        className="h-auto w-28 mix-blend-multiply"
+        width={700}
+        height={466}
+        className="h-auto w-40 sm:w-44"
       />
       <p className="mt-1 font-heading text-lg font-medium text-ink sm:text-xl">
         まだ投稿がありません

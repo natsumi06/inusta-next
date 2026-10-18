@@ -40,8 +40,18 @@
   --animate-yuru-fade-out: yuru-fade-out var(--duration-yuru) ease-in both;
   --animate-yuru-sheet-up: yuru-sheet-up var(--duration-yuru-slow) var(--ease-yuru) both;
   --animate-yuru-sheet-down: yuru-sheet-down var(--duration-yuru) ease-in both;
+  --animate-yuru-bob: yuru-bob 3.2s ease-in-out infinite;
 
   /* 上からふわっと降りてきて、少し沈んでから止まる */
+  @keyframes yuru-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
   @keyframes yuru-drop-in {
     0% {
       opacity: 0;

@@ -1,10 +1,14 @@
 import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
-import IconSkeleton from "@/app/components/skeletons/icon-skeleton";
 import { fetchUser } from "./../../../../../lib/apis";
-import Image from "next/image";
+import { auth } from "./../../../../../auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import UserSkeleton from "@/app/components/skeletons/user-skeleton";
+import ProfileAvatar from "@/app/components/pages/profile/profile-avatar";
+import ProfilePostsGrid from "@/app/components/pages/profile/profile-posts-grid";
+import EmptyPosts from "@/app/components/pages/profile/empty-posts";
+import { ChevronLeftIcon } from "@/app/components/layouts/navigation-icons";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -23,71 +27,57 @@ export default function Page({ params }: PageProps) {
 
 async function UserDetail({ params }: PageProps) {
   const { id } = await params;
-  const user = await fetchUser(id);
+  const [user, session] = await Promise.all([fetchUser(id), auth()]);
+
+  // 自分のページは2種類にせず、マイページに集める
+  if (session?.user?.email && session.user.email === user.email) {
+    redirect("/mypage");
+  }
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mt-8 flex bg-white p-4">
-        {user.image && (
-          <Image
-            className="block aspect-[1/1] rounded-full object-cover"
-            src={user.image}
-            width={96}
-            height={96}
-            alt="user icon"
-          />
-        )}
-
-        {!!user.image || <IconSkeleton />}
-
-        <div className="pl-4">
-          <p className="text-lg font-semibold text-black">{user.name}</p>
-          <p className="whitespace-pre-wrap font-medium  text-black">
-            {user.description}
-          </p>
-          <div className="mt-4 flex">
-            <p className="text-sm font-semibold text-black">
-              投稿{user.posts.length}件
+    <div className="mx-auto max-w-5xl sm:px-6">
+      <div className="px-4 pt-2 sm:px-0 sm:pt-4">
+        <Link
+          href="/users"
+          className="-ml-1.5 inline-flex h-11 items-center gap-0.5 pr-3 text-sm font-bold text-ink"
+        >
+          <ChevronLeftIcon className="size-5" />
+          ユーザー一覧
+        </Link>
+      </div>
+      <section
+        aria-label="プロフィール"
+        className="border-y border-line bg-white px-4 py-5 sm:rounded-2xl sm:border sm:px-8 sm:py-7"
+      >
+        <div className="flex items-center gap-4 sm:gap-7">
+          <ProfileAvatar image={user.image} name={user.name} />
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
+            <p className="max-w-full truncate text-xl font-bold text-ink">
+              {user.name}
+            </p>
+            <p className="whitespace-nowrap text-sm text-sub">
+              投稿 <strong className="text-ink">{user.posts.length}</strong> 件
             </p>
           </div>
         </div>
-      </div>
-      <div className="my-8 bg-white">
-        {user.posts.length > 0 ? (
-          <div className="grid grid-cols-3 gap-1">
-            {user.posts.map((post) => {
-              const caption = post.caption
-                ? post.caption.length > 50
-                  ? post.caption.substring(0, 50) + "..."
-                  : post.caption
-                : "";
-              return (
-                <Link href={`/posts/${post.id}`} key={post.id}>
-                  <div className="relative group overflow-hidden">
-                    <Image
-                      className="aspect-[1/1] w-full object-cover transition duration-200 group-hover:brightness-110"
-                      src={post.image}
-                      width={400}
-                      height={400}
-                      alt="user icon"
-                    />
-                    {caption && (
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-2">
-                        <p className="text-xs text-white truncate">{caption}</p>
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="py-16 px-4 text-center">
-            <p className="text-gray-500 text-lg">🐾</p>
-            <p className="text-gray-500">まだ投稿がありません</p>
-          </div>
+        {/* 自己紹介が空なら何も出さない（書くよう促すのはマイページだけ） */}
+        {user.description && (
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-ink sm:pl-[124px] sm:text-[15px]">
+            {user.description}
+          </p>
         )}
-      </div>
+      </section>
+
+      <section
+        aria-label={`${user.name}さんの投稿`}
+        className="px-4 pb-8 pt-5 sm:px-0"
+      >
+        {user.posts.length > 0 ? (
+          <ProfilePostsGrid posts={user.posts} name={user.name} />
+        ) : (
+          <EmptyPosts />
+        )}
+      </section>
     </div>
   );
 }

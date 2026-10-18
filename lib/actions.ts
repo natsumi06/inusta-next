@@ -10,7 +10,7 @@ import { AuthError } from "next-auth";
  * - updatePost: 投稿編集（本人の投稿のみ）
  * - deletePost: 投稿削除（本人の投稿のみ）
  * - createComment: コメント作成（投稿存在チェック）
- * - updateMe: プロフィール編集（name/description/画像差し替え対応）
+ * - updateProfile: プロフィール編集（アイコン・表示名・自己紹介）
  * - createPost: 投稿作成（Vercel Blobへの画像アップロード込み）
  * - consumeWelcome: 歓迎モーダルの表示済み処理（印のCookieを消す）
  */
@@ -48,7 +48,7 @@ const RegisterUserSchema = z
     {
       message: "パスワードと確認用パスワードが一致しません。",
       path: ["passwordConfirmation"],
-    }
+    },
   )
   .refine(
     async (args) => {
@@ -59,7 +59,7 @@ const RegisterUserSchema = z
     {
       message: "このメールアドレスはすでに使われています。",
       path: ["email"],
-    }
+    },
   );
 
 type RegisterUserState = {
@@ -82,7 +82,7 @@ export async function action(formData: FormData) {
  */
 export async function registerUser(
   _state: RegisterUserState,
-  formData: FormData
+  formData: FormData,
 ): Promise<RegisterUserState> {
   const validatedFields = await RegisterUserSchema.safeParseAsync({
     email: formData.get("email"),
@@ -150,13 +150,14 @@ async function requireEmail() {
  */
 export async function saveDisplayName(
   _state: ProfileStepState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProfileStepState> {
   const email = await requireEmail();
 
   const name = ((formData.get("name") as string) ?? "").trim();
   if (!name) return { message: "表示名を入力してください。" };
-  if (name.length > 30) return { message: "表示名は30文字以内にしてください。" };
+  if (name.length > 30)
+    return { message: "表示名は30文字以内にしてください。" };
 
   await prisma.user.update({ where: { email }, data: { name } });
 
@@ -170,7 +171,7 @@ export async function saveDisplayName(
  */
 export async function saveIcon(
   _state: ProfileStepState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProfileStepState> {
   const email = await requireEmail();
 
@@ -206,7 +207,7 @@ export type ProfileModalState = {
  */
 export async function updateIcon(
   _state: ProfileModalState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProfileModalState> {
   const email = await requireEmail();
 
@@ -236,7 +237,7 @@ export async function updateIcon(
  */
 export async function updateBio(
   _state: ProfileModalState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProfileModalState> {
   const email = await requireEmail();
 
@@ -256,7 +257,7 @@ export async function updateBio(
  */
 export async function saveBio(
   _state: ProfileStepState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProfileStepState> {
   const email = await requireEmail();
 
@@ -362,42 +363,59 @@ export async function createComment(postId: string, formData: FormData) {
   redirect(`/posts/${postId}`);
 }
 
+/** プロフィール編集（アイコン・表示名・自己紹介）。保存できたら ok を返す */
+export type ProfileEditState = {
+  errors?: { name?: string[]; description?: string[]; image?: string[] };
+  ok?: boolean;
+};
+
 /**
- * プロフィール編集
- * name/description を更新
- * 画像はフォームに file があれば Blob にアップして差し替え
- * 更新後はマイページを再検証してマイページへ遷移
+ * プロフィール編集: アイコン・表示名・自己紹介をまとめて保存
+ * メールアドレスとパスワードは設定 › 会員情報で変える
  */
-export async function updateMe(formData: FormData) {
-  const session = await auth();
-  const email = session?.user?.email || "";
-  const user = await prisma.user.findFirstOrThrow({
-    where: { email },
-  });
+export async function updateProfile(
+  _state: ProfileEditState,
+  formData: FormData,
+): Promise<ProfileEditState> {
+  const email = await requireEmail();
 
-  const data = {
-    name: formData.get("name") as string,
-    description: formData.get("description") as string,
-    image: user.image,
+  const name = ((formData.get("name") as string) ?? "").trim();
+  const description = ((formData.get("description") as string) ?? "").trim();
+  const errors: ProfileEditState["errors"] = {};
+  if (!name) errors.name = ["表示名を入力してください。"];
+  else if (name.length > 30)
+    errors.name = ["表示名は30文字以内にしてください。"];
+  if (description.length > 500) {
+    errors.description = ["自己紹介は500文字以内にしてください。"];
+  }
+
+  const imageFile = formData.get("image") as File | null;
+  const hasImage = !!imageFile && imageFile.size > 0;
+  if (hasImage && !ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
+    errors.image = ["対応する形式：JPEG, PNG, WebP, GIF"];
+  } else if (hasImage && imageFile.size > MAX_IMAGE_SIZE) {
+    errors.image = ["画像は5MB以下にしてください。"];
+  }
+  if (Object.keys(errors).length > 0) return { errors };
+
+  const data: { name: string; description: string; image?: string } = {
+    name,
+    description,
   };
-
-  const imageFile = formData.get("image") as File;
-  if (imageFile.size > 0) {
+  if (hasImage) {
     const blob = await put(imageFile.name, imageFile, {
       access: "public",
-      allowOverwrite: true,
+      addRandomSuffix: true,
     });
     data.image = blob.url;
   }
 
-  await prisma.user.update({
-    where: { email },
-    data,
-  });
+  await prisma.user.update({ where: { email }, data });
 
   revalidatePath("/mypage");
   revalidatePath("/users");
-  redirect("/mypage");
+  revalidatePath("/home");
+  return { ok: true };
 }
 
 /**
@@ -450,7 +468,7 @@ export async function createPost(formData: FormData) {
  */
 export async function authenticate(
   state: string | undefined,
-  formData: FormData
+  formData: FormData,
 ) {
   try {
     await signIn("credentials", formData);

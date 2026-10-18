@@ -32,7 +32,7 @@ export default function IconEditModal({
       if (result.ok) setOpen(false);
       return result;
     },
-    { message: null }
+    { message: null },
   );
 
   const openModal = () => {

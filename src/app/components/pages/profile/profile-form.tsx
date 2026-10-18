@@ -1,174 +1,205 @@
 "use client";
 
-import { updateMe } from "./../../../../../lib/actions";
 import Image from "next/image";
-import { useState, FormEvent, ChangeEvent } from "react";
+import {
+  ChangeEvent,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import clsx from "clsx";
+import { ProfileModalActions } from "./profile-modal";
+import { CameraIcon } from "@/app/components/layouts/navigation-icons";
+import {
+  updateProfile,
+  type ProfileEditState,
+} from "./../../../../../lib/actions";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const NAME_MAX_LENGTH = 30;
+const BIO_MAX_LENGTH = 500;
 
+const inputClassName =
+  "w-full rounded-xl border-[1.5px] border-ink bg-white px-4 text-[16px] text-ink shadow-[0_2px_0_var(--color-line)] placeholder:text-[#8a8a84] focus:outline-2 focus:outline-offset-2 focus:outline-ink";
+
+function FieldErrors({ id, errors }: { id: string; errors?: string[] }) {
+  if (!errors?.length) return null;
+  return (
+    <div id={id} className="flex flex-col gap-0.5">
+      {errors.map((error) => (
+        <p key={error} className="text-sm text-red-600">
+          {error}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * プロフィール編集のフォーム（アイコン・表示名・自己紹介）
+ * PC のモーダル、スマホの全画面シート、直接開いたときの画面で共通に使う
+ */
 export default function ProfileEditForm({
   user,
+  onCancel,
+  onSaved,
+  onDirtyChange,
+  sticky = false,
 }: {
-  user: {
-    name: string;
-    email: string;
-    image: string | null;
-    description: string | null;
-  };
+  user: { name: string; image: string | null; description: string | null };
+  onCancel: () => void;
+  onSaved: () => void;
+  /** 書きかけかどうか（閉じるときの確認に使う） */
+  onDirtyChange?: (dirty: boolean) => void;
+  /** 保存ボタンを下に固定する */
+  sticky?: boolean;
 }) {
-  const [preview, setPreview] = useState<string | null>(user.image);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [descriptionLength, setDescriptionLength] = useState(
-    user.description?.length || 0
+  const [preview, setPreview] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [name, setName] = useState(user.name);
+  const [bio, setBio] = useState(user.description ?? "");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [state, action, isPending] = useActionState(
+    async (prev: ProfileEditState, formData: FormData) => {
+      const result = await updateProfile(prev, formData);
+      if (result.ok) onSaved();
+      return result;
+    },
+    {},
   );
+
+  const dirty =
+    !!preview || name !== user.name || bio !== (user.description ?? "");
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setError(null);
-
+    setFileError(null);
     if (!file) return;
-
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError("対応する形式：JPEG, PNG, WebP, GIF");
+      setFileError("対応する形式：JPEG, PNG, WebP, GIF");
       e.target.value = "";
       return;
     }
-
     if (file.size > MAX_FILE_SIZE) {
-      setError("ファイルサイズは5MB以下にしてください");
+      setFileError("画像は5MB以下にしてください");
       e.target.value = "";
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setPreview(event.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    setPreview(URL.createObjectURL(file));
   };
 
-  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setDescriptionLength(e.target.value.length);
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const name = formData.get("name");
-    if (!name || (name as string).trim().length === 0) {
-      setError("名前は必須です");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await updateMe(formData);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "プロフィール更新に失敗しました"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const shown = preview ?? user.image;
+  const imageErrors = fileError ? [fileError] : state.errors?.image;
+  const nameEmpty = name.trim().length === 0;
 
   return (
-    <form onSubmit={handleSubmit} className="relative mt-6 space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          名前 <span className="text-red-500">*</span>
-        </label>
-        <input
-          defaultValue={user.name}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
-          name="name"
-          type="text"
-          required
-          disabled={isLoading}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          メールアドレス <span className="text-red-500">*</span>
-        </label>
-        <input
-          defaultValue={user.email}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-700"
-          name="email"
-          type="email"
-          required
-          disabled={isLoading}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          自己紹介
-        </label>
-        <textarea
-          className="text-gray-700 mt-1 w-full rounded border border-gray-300 p-2.5 focus:border-blue-500 focus:ring-blue-700"
-          name="description"
-          rows={6}
-          defaultValue={user.description ?? ""}
-          onChange={handleDescriptionChange}
-          disabled={isLoading}
-          maxLength={500}
-        ></textarea>
-        <p className="mt-1 text-xs text-gray-500">
-          {descriptionLength} / 500 文字
-        </p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          プロフィール画像
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="mt-1 w-full rounded bg-gray-100 font-medium text-gray-500 file:mr-4 file:border-0 file:bg-gray-800 file:px-4 file:py-2.5 file:text-white"
-          name="image"
-          disabled={isLoading}
-        />
-        <p className="mt-1 text-xs text-gray-500">
-          対応形式：JPEG, PNG, WebP, GIF（最大5MB）
-        </p>
-      </div>
-
-      {preview && (
-        <div>
-          <p className="mb-2 text-sm font-medium text-gray-700">プレビュー</p>
-          <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-gray-300">
-            <Image
-              src={preview}
-              alt="preview"
-              fill
-              className="object-cover"
+    <form action={action} className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col gap-6 px-5 pb-2 pt-5 sm:px-7 sm:pt-6">
+        <div className="flex items-center gap-4 sm:gap-5">
+          <span className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-ink bg-soft">
+            {shown ? (
+              <Image
+                src={shown}
+                alt={preview ? "選んだ写真" : "いまのアイコン"}
+                width={96}
+                height={96}
+                unoptimized={!!preview}
+                className="size-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/illustrations/dog-sit.png"
+                alt="いまのアイコン（白黒わんこ）"
+                width={165}
+                height={155}
+                className="mt-[8%] h-auto w-[66%] mix-blend-multiply"
+              />
+            )}
+          </span>
+          <div className="flex flex-col items-start gap-1.5">
+            <input
+              ref={fileInputRef}
+              name="image"
+              type="file"
+              accept={ALLOWED_TYPES.join(",")}
+              onChange={handleImageChange}
+              className="sr-only"
+              tabIndex={-1}
             />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-ink bg-white px-5 text-[15px] font-bold transition hover:bg-soft"
+            >
+              <CameraIcon className="size-[18px]" />
+              {shown ? "写真を変える" : "写真を選ぶ"}
+            </button>
+            <p className="text-xs text-sub">JPEG・PNG・WebP・GIF、5MBまで</p>
           </div>
         </div>
-      )}
+        <FieldErrors id="profile-image-error" errors={imageErrors} />
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="profile-name" className="text-sm font-bold">
+            表示名
+            <span aria-hidden="true" className="ml-1 text-sub">
+              *
+            </span>
+            <span className="sr-only">（必須）</span>
+          </label>
+          <input
+            id="profile-name"
+            name="name"
+            type="text"
+            required
+            maxLength={NAME_MAX_LENGTH}
+            autoComplete="nickname"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            aria-invalid={!!state.errors?.name}
+            aria-describedby="profile-name-error"
+            className={clsx(inputClassName, "h-[52px] sm:h-[50px]")}
+          />
+          <FieldErrors id="profile-name-error" errors={state.errors?.name} />
         </div>
-      )}
 
-      <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-700 disabled:bg-gray-400 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900"
-        >
-          {isLoading ? "保存中..." : "保存"}
-        </button>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="profile-bio" className="text-sm font-bold">
+            自己紹介
+          </label>
+          <textarea
+            id="profile-bio"
+            name="description"
+            rows={5}
+            maxLength={BIO_MAX_LENGTH}
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="例：柴犬のこむぎと暮らしています。おさんぽ写真をのせます。"
+            aria-invalid={!!state.errors?.description}
+            aria-describedby="profile-bio-count profile-bio-error"
+            className={clsx(inputClassName, "resize-none py-3 leading-relaxed")}
+          />
+          <p id="profile-bio-count" className="self-end text-xs text-sub">
+            {bio.length} / {BIO_MAX_LENGTH}
+          </p>
+          <FieldErrors
+            id="profile-bio-error"
+            errors={state.errors?.description}
+          />
+        </div>
       </div>
+      <ProfileModalActions
+        onCancel={onCancel}
+        pending={isPending}
+        disabled={nameEmpty}
+        sticky={sticky}
+      />
     </form>
   );
 }

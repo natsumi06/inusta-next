@@ -67,10 +67,10 @@ export async function editPost(
   await submitButton.waitFor({ state: 'visible', timeout: 5000 });
   await submitButton.click();
 
-  // マイページにリダイレクトされるまで待機
-  await page.waitForURL('/mypage', { timeout: 15000 });
+  // 保存すると投稿詳細にもどる
+  await page.waitForURL(`/posts/${postId}`, { timeout: 15000 });
 
-  // その後、投稿詳細ページに移動して、更新されたキャプションを確認
+  // 更新されたひとことを確認
   await page.goto(`/posts/${postId}`);
   await expect(page.locator(`text=${newCaption}`)).toBeVisible({ timeout: 10000 });
 }
@@ -79,16 +79,17 @@ export async function editPost(
  * 投稿を削除する
  */
 export async function deletePost(page: Page, postId: string): Promise<void> {
-  // 投稿編集ページに移動
-  await page.goto(`/posts/${postId}/edit`);
+  // 投稿詳細ページに移動
+  await page.goto(`/posts/${postId}`);
 
-  // 削除ボタンをクリック（「投稿を削除」テキスト）
-  const deleteButton = page.locator('button').filter({ hasText: '投稿を削除' }).first();
-  await deleteButton.waitFor({ state: 'visible', timeout: 5000 });
-  await deleteButton.click();
+  // 「…」メニューを開いて「削除する」を選ぶ
+  const menuButton = page.getByRole('button', { name: '投稿のメニュー' });
+  await menuButton.waitFor({ state: 'visible', timeout: 5000 });
+  await menuButton.click();
+  await page.getByRole('menuitem', { name: '削除する' }).click();
 
-  // 確認ボタンをクリック（モーダル内の「削除する」ボタン）
-  const confirmButton = page.locator('button').filter({ hasText: '削除する' }).first();
+  // 確認の「削除する」ボタンをクリック
+  const confirmButton = page.getByRole('alertdialog').getByRole('button', { name: '削除する' });
   await confirmButton.waitFor({ state: 'visible', timeout: 5000 });
   await confirmButton.click();
 
@@ -146,7 +147,7 @@ export async function addComment(
   await commentInput.fill(commentText);
 
   // コメント投稿ボタンをクリック
-  const submitButton = page.locator('button').filter({ hasText: "送信" }).first();
+  const submitButton = page.locator('button').filter({ hasText: "送る" }).first();
   await submitButton.click();
 
   // コメントが表示されるまで待機
@@ -195,7 +196,7 @@ export async function getCommentCount(page: Page, postId: string): Promise<numbe
 export async function getCommentCountOnHome(page: Page, caption: string): Promise<number> {
   await page.goto('/home');
   const postElement = page.locator(`text=${caption}`).first().locator('..');
-  const commentCountElement = postElement.locator('text=/💬\\s*\\d+/');
+  const commentCountElement = postElement.locator('text=/コメント\\s*\\d+/');
   const countText = await commentCountElement.textContent();
   const match = countText?.match(/(\d+)/);
   return match ? parseInt(match[1], 10) : 0;

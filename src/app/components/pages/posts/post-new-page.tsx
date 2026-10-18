@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import PostNewForm from "./post-new-form";
+import PostForm from "./post-form";
 import DiscardConfirm from "./discard-confirm";
 
 /**
@@ -20,12 +20,12 @@ export default function PostNewPage() {
 
   return (
     <div className="overflow-hidden rounded-[20px] border border-line bg-white pb-5 sm:pb-0">
-      <PostNewForm
+      <PostForm
         onCancel={() => {
           if (dirtyRef.current) setConfirming(true);
           else router.push("/home");
         }}
-        onPosted={(postId) => router.replace(`/posts/${postId}`)}
+        onDone={(postId) => router.replace(`/posts/${postId}`)}
         onDirtyChange={handleDirtyChange}
       />
       <DiscardConfirm

@@ -89,6 +89,16 @@ export async function fetchPost(id: string) {
   }
 }
 
+/** 自分の投稿だけを返す（投稿の編集で使う）。ほかの人の投稿なら null */
+export async function fetchOwnPost(id: string) {
+  const session = await auth();
+  if (!session?.user?.email) return null;
+  return prisma.post.findFirst({
+    where: { id, user: { email: session.user.email } },
+    select: { id: true, image: true, caption: true },
+  });
+}
+
 export async function fetchLatestUsers() {
   try {
     return await prisma.user.findMany({

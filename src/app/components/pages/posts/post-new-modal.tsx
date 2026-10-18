@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import ProfileModal from "@/app/components/pages/profile/profile-modal";
-import PostNewForm from "./post-new-form";
+import PostForm from "./post-form";
 import DiscardConfirm from "./discard-confirm";
 
 /**
@@ -40,9 +40,9 @@ export default function PostNewModal() {
       title="写真を投稿"
       size="large"
     >
-      <PostNewForm
+      <PostForm
         onCancel={close}
-        onPosted={(postId) => router.replace(`/posts/${postId}`)}
+        onDone={(postId) => router.replace(`/posts/${postId}`)}
         onDirtyChange={handleDirtyChange}
         sticky
       />

@@ -6,7 +6,7 @@ import { AuthError } from "next-auth";
 /**
  * Server Actions
  * - registerUser: 会員登録（重複チェック・bcryptハッシュ）
- * - setupProfile: 会員登録後のプロフィール設定
+ * - saveDisplayName / saveIcon / saveBio: 会員登録後のプロフィール設定（1画面1問）
  * - updatePost: 投稿編集（本人の投稿のみ）
  * - deletePost: 投稿削除（本人の投稿のみ）
  * - createComment: コメント作成（投稿存在チェック）
@@ -20,6 +20,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { WELCOME_COOKIE } from "./welcome";
+import { provisionalName } from "./display-name";
 import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
 
@@ -33,7 +34,6 @@ const ALLOWED_IMAGE_TYPES = [
 
 const RegisterUserSchema = z
   .object({
-    name: z.string().min(1, "ユーザ名は必須です。"),
     email: z.string().email("メールアドレスの形式が正しくありません。"),
     password: z.string().min(8, "パスワードは8文字以上で設定してください。"),
     passwordConfirmation: z
@@ -64,7 +64,6 @@ const RegisterUserSchema = z
 
 type RegisterUserState = {
   errors?: {
-    name?: string[];
     email?: string[];
     password?: string[];
     passwordConfirmation?: string[];
@@ -86,7 +85,6 @@ export async function registerUser(
   formData: FormData
 ): Promise<RegisterUserState> {
   const validatedFields = await RegisterUserSchema.safeParseAsync({
-    name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
     passwordConfirmation: formData.get("passwordConfirmation"),
@@ -99,7 +97,9 @@ export async function registerUser(
     };
   }
 
-  const { name, email, password } = validatedFields.data;
+  const { email, password } = validatedFields.data;
+  // 表示名はつぎの画面で決めてもらう。それまではメールの@より前を仮の名前にする
+  const name = provisionalName(email);
 
   const bcryptedPassword = await bcrypt.hash(password, 10);
   try {
@@ -128,35 +128,51 @@ export async function registerUser(
   await signIn("credentials", {
     email,
     password,
-    redirectTo: "/register/profile",
+    redirectTo: "/register/name?registered=1",
   });
 
-  redirect("/register/profile");
+  redirect("/register/name?registered=1");
 }
 
-type SetupProfileState = {
+type ProfileStepState = {
   message?: string | null;
 };
 
-/**
- * 会員登録の2ステップ目: プロフィール設定（表示名・ひとこと・アイコン）
- * 保存後は準備完了画面へ
- */
-export async function setupProfile(
-  _state: SetupProfileState,
-  formData: FormData
-): Promise<SetupProfileState> {
+async function requireEmail() {
   const session = await auth();
   const email = session?.user?.email;
   if (!email) redirect("/login");
+  return email;
+}
+
+/**
+ * 会員登録後 1問目: 表示名（必須）
+ */
+export async function saveDisplayName(
+  _state: ProfileStepState,
+  formData: FormData
+): Promise<ProfileStepState> {
+  const email = await requireEmail();
 
   const name = ((formData.get("name") as string) ?? "").trim();
   if (!name) return { message: "表示名を入力してください。" };
+  if (name.length > 30) return { message: "表示名は30文字以内にしてください。" };
 
-  const data: { name: string; description: string; image?: string } = {
-    name,
-    description: ((formData.get("description") as string) ?? "").trim(),
-  };
+  await prisma.user.update({ where: { email }, data: { name } });
+
+  revalidatePath("/users");
+  revalidatePath("/mypage");
+  redirect("/register/icon");
+}
+
+/**
+ * 会員登録後 2問目: アイコン（写真を選ばなければそのまま次へ）
+ */
+export async function saveIcon(
+  _state: ProfileStepState,
+  formData: FormData
+): Promise<ProfileStepState> {
+  const email = await requireEmail();
 
   const imageFile = formData.get("image") as File | null;
   if (imageFile && imageFile.size > 0) {
@@ -170,10 +186,30 @@ export async function setupProfile(
       access: "public",
       addRandomSuffix: true,
     });
-    data.image = blob.url;
+    await prisma.user.update({ where: { email }, data: { image: blob.url } });
+
+    revalidatePath("/users");
+    revalidatePath("/mypage");
   }
 
-  await prisma.user.update({ where: { email }, data });
+  redirect("/register/bio");
+}
+
+/**
+ * 会員登録後 3問目: 自己紹介
+ */
+export async function saveBio(
+  _state: ProfileStepState,
+  formData: FormData
+): Promise<ProfileStepState> {
+  const email = await requireEmail();
+
+  const description = ((formData.get("description") as string) ?? "").trim();
+  if (description.length > 500) {
+    return { message: "自己紹介は500文字以内にしてください。" };
+  }
+
+  await prisma.user.update({ where: { email }, data: { description } });
 
   revalidatePath("/users");
   revalidatePath("/mypage");

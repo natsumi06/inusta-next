@@ -3,10 +3,12 @@ import Link from "next/link";
 import { fetchDashboard } from "../../../../lib/apis";
 import { Suspense } from "react";
 import UserSkeleton from "@/app/components/skeletons/user-skeleton";
-import ProfileAvatar from "@/app/components/pages/profile/profile-avatar";
+import IconEditModal from "@/app/components/pages/profile/icon-edit-modal";
+import BioEditModal from "@/app/components/pages/profile/bio-edit-modal";
 import ProfilePostsGrid from "@/app/components/pages/profile/profile-posts-grid";
 import EmptyPosts from "@/app/components/pages/profile/empty-posts";
 import {
+  PencilIcon,
   PlusIcon,
   SettingsIcon,
 } from "@/app/components/layouts/navigation-icons";
@@ -31,10 +33,10 @@ function SettingsLink() {
   return (
     <Link
       href="/mypage/settings"
-      className="flex size-[52px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl text-ink transition hover:bg-soft sm:h-10 sm:w-auto sm:flex-row sm:gap-1.5 sm:rounded-full sm:px-3.5"
+      className="flex size-[52px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl text-ink transition hover:bg-soft sm:h-12 sm:w-auto sm:flex-row sm:gap-2 sm:rounded-full sm:border-2 sm:border-line sm:bg-white sm:pl-[18px] sm:pr-[22px] sm:hover:border-sub"
     >
-      <SettingsIcon className="size-6 sm:size-5" />
-      <span className="text-[11px] font-bold sm:text-sm">設定</span>
+      <SettingsIcon className="size-6 sm:size-[22px]" />
+      <span className="text-[11px] font-bold sm:text-[15px]">設定</span>
     </Link>
   );
 }
@@ -45,64 +47,35 @@ async function Dashboard() {
     <div className="mx-auto max-w-5xl sm:px-6">
       <section
         aria-label="プロフィール"
-        className="mt-2 border-y border-line bg-white px-4 py-5 sm:mt-6 sm:rounded-2xl sm:border sm:px-8 sm:py-7"
+        className="mt-2 border-y border-line bg-white px-4 py-5 sm:mt-6 sm:rounded-2xl sm:border sm:px-9 sm:py-8"
       >
-        <div className="flex items-center gap-4 sm:gap-7">
-          <ProfileAvatar
-            image={user.image}
-            name={user.name}
-            editHref="/mypage/edit"
-          />
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
-            <p className="max-w-full truncate text-xl font-bold text-ink">
+        {/* 左にプロフィールのまとまり、右上に「プロフィールを編集」（中身と操作を分ける） */}
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3 sm:gap-x-7">
+          <IconEditModal image={user.image} name={user.name} />
+          <div className="min-w-0 self-center sm:self-start sm:pt-2.5">
+            <p className="truncate text-xl font-bold text-ink sm:text-2xl">
               {user.name}
             </p>
-            <p className="whitespace-nowrap text-sm text-sub">
+            <p className="mt-0.5 text-sm text-sub">
               投稿 <strong className="text-ink">{user.posts.length}</strong> 件
             </p>
-            <Link
-              href="/mypage/edit"
-              className="hidden h-10 items-center rounded-full border-2 border-ink bg-white px-5 text-sm font-bold text-ink transition hover:bg-soft sm:inline-flex"
-            >
-              プロフィールを編集
-            </Link>
+          </div>
+          <Link
+            href="/mypage/edit"
+            className="-mr-2 inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full pl-2.5 pr-3.5 text-sm font-bold text-ink transition hover:bg-soft sm:text-[15px]"
+          >
+            <PencilIcon className="size-[18px]" />
+            プロフィールを編集
+          </Link>
+          <div className="col-span-3 flex flex-col items-start gap-1 sm:col-span-1 sm:col-start-2">
+            {user.description && (
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink sm:text-[15px]">
+                {user.description}
+              </p>
+            )}
+            <BioEditModal description={user.description} />
           </div>
         </div>
-
-        <div className="mt-4 sm:pl-[124px]">
-          {user.description ? (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink sm:text-[15px]">
-              {user.description}
-            </p>
-          ) : (
-            <Link
-              href="/mypage/edit"
-              className="flex min-h-[52px] max-w-xl items-center gap-2.5 rounded-xl border-[1.5px] border-dashed border-[#b9b9b2] bg-base px-3.5 py-2.5 transition hover:border-sub"
-            >
-              <span
-                aria-hidden="true"
-                className="flex size-7 shrink-0 items-center justify-center rounded-full bg-ink text-white"
-              >
-                <PlusIcon className="size-3.5" />
-              </span>
-              <span className="flex flex-col">
-                <span className="text-sm font-bold text-ink">
-                  自己紹介を書く
-                </span>
-                <span className="text-xs text-sub">
-                  愛犬の名前や犬種を書くと、わんともに覚えてもらえます
-                </span>
-              </span>
-            </Link>
-          )}
-        </div>
-
-        <Link
-          href="/mypage/edit"
-          className="mt-4 flex h-11 items-center justify-center rounded-full border-2 border-ink bg-white text-[15px] font-bold text-ink transition hover:bg-soft sm:hidden"
-        >
-          プロフィールを編集
-        </Link>
       </section>
 
       <section aria-labelledby="my-posts" className="px-4 pb-8 pt-5 sm:px-0">

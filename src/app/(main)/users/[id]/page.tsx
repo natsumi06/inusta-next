@@ -62,7 +62,7 @@ async function UserDetail({ params }: PageProps) {
         </div>
         {/* 自己紹介が空なら何も出さない（書くよう促すのはマイページだけ） */}
         {user.description && (
-          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-ink sm:pl-[124px] sm:text-[15px]">
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-ink sm:pl-[140px] sm:text-[15px]">
             {user.description}
           </p>
         )}

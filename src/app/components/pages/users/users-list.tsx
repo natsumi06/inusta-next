@@ -74,7 +74,7 @@ export default function UsersList({ users }: UsersListProps) {
             filteredUsers.map((user) => (
               <Link href={`/users/${user.id}`} key={user.id}>
                 <div className="flex bg-white p-4 hover:bg-gray-50 transition">
-                  <ProfileAvatar image={user.image} name={user.name} />
+                  <ProfileAvatar image={user.image} name={user.name} className="sm:size-24" />
                   <div className="pl-4 flex-1">
                     <p className="text-lg font-semibold text-black">
                       {user.name}

@@ -1,79 +1,73 @@
 import Image from "next/image";
-import Link from "next/link";
 import clsx from "clsx";
 import { CameraIcon } from "@/app/components/layouts/navigation-icons";
 
 /**
  * プロフィールのアイコン
- * - editHref があるとき（自分のマイページ）は押すと編集が開き、カメラの印を付ける。
+ * - editable（自分のマイページ）のときはカメラの印を付ける。
  *   未設定なら点線の輪＋うすいわんこで「ここに写真を入れられる」と伝える。
  * - ほかの人のページで未設定なら、白黒わんこをそのまま見せる。
+ * 押したときの動き（アイコン変更モーダル）は icon-edit-modal.tsx が持つ
  */
 export default function ProfileAvatar({
   image,
   name,
-  editHref,
+  editable = false,
+  className,
 }: {
   image: string | null;
   name: string;
-  editHref?: string;
+  editable?: boolean;
+  className?: string;
 }) {
-  const editable = !!editHref;
   const unset = !image;
-
-  const face = (
-    <span
-      className={clsx(
-        "flex size-full items-center justify-center overflow-hidden rounded-full border-2",
-        unset && editable
-          ? "border-dashed border-[#9a9a92] bg-soft"
-          : "border-ink bg-soft"
-      )}
-    >
-      {image ? (
-        <Image
-          src={image}
-          alt={editable ? "" : `${name}さんのアイコン`}
-          width={96}
-          height={96}
-          className="size-full object-cover"
-        />
-      ) : (
-        <Image
-          src="/illustrations/dog-sit.png"
-          alt={editable ? "" : `${name}さんのアイコン`}
-          width={165}
-          height={155}
-          className={clsx("mt-[8%] h-auto w-[66%] mix-blend-multiply", {
-            "opacity-[0.55]": editable,
-          })}
-        />
-      )}
-    </span>
-  );
-
-  if (!editHref) {
-    return <div className="size-20 shrink-0 sm:size-24">{face}</div>;
-  }
+  const alt = editable ? "" : `${name}さんのアイコン`;
 
   return (
-    <Link
-      href={editHref}
-      aria-label={unset ? "アイコンを設定する" : "アイコンを変更する"}
-      className="relative block size-20 shrink-0 transition hover:opacity-90 sm:size-24"
+    <span
+      className={clsx("relative block size-20 shrink-0 sm:size-28", className)}
     >
-      {face}
       <span
-        aria-hidden="true"
         className={clsx(
-          "absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full",
-          unset
-            ? "size-8 border-[3px] border-white bg-ink text-white"
-            : "size-7 border-2 border-ink bg-white text-ink"
+          "flex size-full items-center justify-center overflow-hidden rounded-full border-2 bg-soft",
+          unset && editable
+            ? "border-dashed border-[#9a9a92]"
+            : "border-ink"
         )}
       >
-        <CameraIcon className={unset ? "size-[15px]" : "size-[13px]"} />
+        {image ? (
+          <Image
+            src={image}
+            alt={alt}
+            width={112}
+            height={112}
+            className="size-full object-cover"
+          />
+        ) : (
+          <Image
+            src="/illustrations/dog-sit.png"
+            alt={alt}
+            width={165}
+            height={155}
+            className={clsx("mt-[8%] h-auto w-[66%] mix-blend-multiply", {
+              "opacity-[0.55]": editable,
+            })}
+          />
+        )}
       </span>
-    </Link>
+      {editable && (
+        <span
+          aria-hidden="true"
+          className={clsx(
+            "absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full",
+            unset
+              ? "size-8 border-[3px] border-white bg-ink text-white sm:size-9"
+              : "size-7 border-2 border-ink bg-white text-ink sm:size-8"
+          )}
+        >
+          <CameraIcon className={unset ? "size-[15px]" : "size-[13px] sm:size-[15px]"} />
+        </span>
+      )}
+    </span>
   );
 }

@@ -170,7 +170,7 @@ export default function Home() {
             <br />
             ゆるく流れてくる。
           </h1>
-          <p className="text-[15px] leading-[1.85] md:text-base md:leading-[1.9]">
+          <p className="text-[15px] leading-[1.85] md:text-[16px] md:leading-[1.9]">
             愛犬の写真をシェアするアプリです。
             <br />
             会員みんながフォロワー（わんとも）です。
@@ -178,7 +178,7 @@ export default function Home() {
           <div className="flex flex-col gap-3 md:mt-2 md:items-start">
             <Link
               href="/register"
-              className="inline-flex h-[52px] w-full items-center justify-center rounded-full bg-ink px-10 text-base font-bold text-white shadow-cheek transition hover:translate-y-px hover:shadow-none md:w-auto"
+              className="inline-flex h-[52px] w-full items-center justify-center rounded-full bg-ink px-10 text-[16px] font-bold text-white shadow-cheek transition hover:translate-y-px hover:shadow-none md:w-auto"
             >
               無料ではじめる
             </Link>
@@ -245,7 +245,7 @@ export default function Home() {
         <p className="text-sm text-sub md:text-[15px]">わんわんわん</p>
         <Link
           href="/register"
-          className="mt-3 inline-flex h-[52px] w-full items-center justify-center rounded-full bg-ink px-10 text-base font-bold text-white shadow-cheek transition hover:translate-y-px hover:shadow-none md:w-auto"
+          className="mt-3 inline-flex h-[52px] w-full items-center justify-center rounded-full bg-ink px-10 text-[16px] font-bold text-white shadow-cheek transition hover:translate-y-px hover:shadow-none md:w-auto"
         >
           無料ではじめる
         </Link>

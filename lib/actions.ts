@@ -195,6 +195,62 @@ export async function saveIcon(
   redirect("/register/bio");
 }
 
+/** マイページのモーダルで使う。保存できたら ok を返し、モーダルを閉じる */
+export type ProfileModalState = {
+  message?: string | null;
+  ok?: boolean;
+};
+
+/**
+ * マイページのアイコンを押すと開くモーダル: アイコンだけ変える
+ */
+export async function updateIcon(
+  _state: ProfileModalState,
+  formData: FormData
+): Promise<ProfileModalState> {
+  const email = await requireEmail();
+
+  const imageFile = formData.get("image") as File | null;
+  if (!imageFile || imageFile.size === 0) {
+    return { message: "写真を選んでください。" };
+  }
+  if (!ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
+    return { message: "対応する形式：JPEG, PNG, WebP, GIF" };
+  }
+  if (imageFile.size > MAX_IMAGE_SIZE) {
+    return { message: "画像は5MB以下にしてください。" };
+  }
+  const blob = await put(imageFile.name, imageFile, {
+    access: "public",
+    addRandomSuffix: true,
+  });
+  await prisma.user.update({ where: { email }, data: { image: blob.url } });
+
+  revalidatePath("/users");
+  revalidatePath("/mypage");
+  return { ok: true };
+}
+
+/**
+ * マイページの「自己紹介を追加／変更」で開くモーダル: 自己紹介だけ変える
+ */
+export async function updateBio(
+  _state: ProfileModalState,
+  formData: FormData
+): Promise<ProfileModalState> {
+  const email = await requireEmail();
+
+  const description = ((formData.get("description") as string) ?? "").trim();
+  if (description.length > 500) {
+    return { message: "自己紹介は500文字以内にしてください。" };
+  }
+  await prisma.user.update({ where: { email }, data: { description } });
+
+  revalidatePath("/users");
+  revalidatePath("/mypage");
+  return { ok: true };
+}
+
 /**
  * 会員登録後 3問目: 自己紹介
  */

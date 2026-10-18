@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
-import IconSkeleton from "@/app/components/skeletons/icon-skeleton";
+import ProfileAvatar from "@/app/components/pages/profile/profile-avatar";
 
 type User = {
   id: string;
@@ -75,17 +74,7 @@ export default function UsersList({ users }: UsersListProps) {
             filteredUsers.map((user) => (
               <Link href={`/users/${user.id}`} key={user.id}>
                 <div className="flex bg-white p-4 hover:bg-gray-50 transition">
-                  {user.image ? (
-                    <Image
-                      src={user.image}
-                      className="block aspect-[1/1] rounded-full object-cover flex-shrink-0"
-                      width={96}
-                      height={96}
-                      alt="user icon"
-                    />
-                  ) : (
-                    <IconSkeleton />
-                  )}
+                  <ProfileAvatar image={user.image} name={user.name} className="sm:size-24" />
                   <div className="pl-4 flex-1">
                     <p className="text-lg font-semibold text-black">
                       {user.name}

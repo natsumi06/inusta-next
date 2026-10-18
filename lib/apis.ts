@@ -117,6 +117,8 @@ export async function fetchUser(id: string) {
         name: true,
         image: true,
         description: true,
+        // 自分のページかどうかの判定だけに使う（画面には出さない）
+        email: true,
         posts: {
           orderBy: {
             createdAt: "desc",

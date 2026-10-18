@@ -67,13 +67,13 @@ export default function WelcomeModal() {
         </svg>
       </button>
       <Image
-        src="/illustrations/dog-walk.png"
+        src="/illustrations/dog-house.png"
         alt=""
         aria-hidden="true"
-        width={335}
-        height={180}
+        width={700}
+        height={466}
         priority
-        className="mx-auto h-auto w-48 sm:w-56"
+        className="mx-auto h-auto w-52 sm:w-60"
       />
       <h2
         id="welcome-title"

@@ -43,8 +43,8 @@ export async function registerAndLogin(
   await page.getByRole('link', { name: 'スキップ' }).click();
   await page.waitForURL('/register/complete', { timeout: 15000 });
 
-  // 準備完了画面の「みんなの投稿を見る」をクリック
-  const homeLink = page.locator('a').filter({ hasText: 'みんなの投稿を見る' });
+  // 準備完了画面の「Start！」をクリック
+  const homeLink = page.locator('a').filter({ hasText: 'Start！' });
   await homeLink.click();
 
   // ホーム画面に移動するまで待機

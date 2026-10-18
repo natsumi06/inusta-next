@@ -27,7 +27,7 @@ export default async function Page({ params }: PageProps) {
             alt="post image"
           />
           <div className="p-2">
-            <h3 className="mb-2 font-semibold">ユーザー</h3>
+            <h3 className="mb-2 font-semibold">投稿したわんとも</h3>
             <div className="flex rounded border bg-white p-2">
               {post.user.image && (
                 <Image

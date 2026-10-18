@@ -34,12 +34,17 @@ export async function registerAndLogin(
   // 登録完了ページまで待機
   await page.waitForURL('/register/complete', { timeout: 15000 });
 
-  // 「ホームへ戻る」ボタンをクリック
-  const homeLink = page.locator('a').filter({ hasText: 'ホームへ戻る' });
+  // 準備完了画面の「みんなの投稿を見る」をクリック
+  const homeLink = page.locator('a').filter({ hasText: 'みんなの投稿を見る' });
   await homeLink.click();
 
-  // ホーム画面(/posts)に移動するまで待機
+  // ホーム画面に移動するまで待機
   await page.waitForURL('/home', { timeout: 15000 });
+
+  // はじめてのホームで出る歓迎モーダルを閉じる
+  const welcome = page.getByRole('dialog', { name: 'ここがホームです' });
+  await welcome.getByRole('button', { name: 'みんなの投稿を見る' }).click();
+  await welcome.waitFor({ state: 'hidden' });
 }
 
 /**

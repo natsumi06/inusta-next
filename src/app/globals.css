@@ -23,6 +23,64 @@
   --shadow-cheek: 0 3px 0 var(--color-cheek);
 }
 
+/* 動き: 「ゆる」なので一般的な速さより遅め（docs/design.md「動き」参照） */
+:root {
+  --duration-yuru-quick: 250ms; /* ホバー・押したときの反応 */
+  --duration-yuru: 450ms; /* 閉じる・消える */
+  --duration-yuru-slow: 800ms; /* モーダルなどが現れる */
+}
+
+@theme {
+  --ease-yuru: cubic-bezier(0.33, 1, 0.68, 1);
+
+  --animate-yuru-drop-in: yuru-drop-in var(--duration-yuru-slow) var(--ease-yuru) both;
+  --animate-yuru-lift-out: yuru-lift-out var(--duration-yuru) ease-in both;
+  --animate-yuru-fade-in: yuru-fade-in var(--duration-yuru-slow) var(--ease-yuru) both;
+  --animate-yuru-fade-out: yuru-fade-out var(--duration-yuru) ease-in both;
+
+  /* 上からふわっと降りてきて、少し沈んでから止まる */
+  @keyframes yuru-drop-in {
+    0% {
+      opacity: 0;
+      transform: translateY(-96px);
+    }
+    75% {
+      opacity: 1;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes yuru-lift-out {
+    to {
+      opacity: 0;
+      transform: translateY(-32px);
+    }
+  }
+  @keyframes yuru-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes yuru-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/* 動きを減らす設定の人には、移動なしのフェードだけにする */
+@media (prefers-reduced-motion: reduce) {
+  .animate-yuru-drop-in {
+    animation-name: yuru-fade-in;
+  }
+  .animate-yuru-lift-out {
+    animation-name: yuru-fade-out;
+  }
+}
+
 body {
   font-size: var(--font-size-body);
   line-height: var(--line-height-body);

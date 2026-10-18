@@ -105,7 +105,7 @@ export default function UsersList({ users }: UsersListProps) {
           ) : (
             <div className="col-span-full p-8 text-center">
               <p className="text-gray-500">
-                「{searchQuery}」に該当するユーザーが見つかりません
+                「{searchQuery}」に該当するわんともが見つかりません
               </p>
             </div>
           )}

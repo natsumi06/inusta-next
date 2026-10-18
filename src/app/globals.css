@@ -19,7 +19,7 @@
   --color-ok: #1e7f46;
 
   --font-sans: var(--font-zen-kaku), sans-serif;
-  --font-heading: var(--font-kiwi-maru), serif;
+  --font-heading: var(--font-kiwi-maru), sans-serif;
 
   --shadow-cheek: 0 3px 0 var(--color-cheek);
 }

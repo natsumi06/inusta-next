@@ -196,16 +196,3 @@ export async function fetchPostwithComments(id: string) {
     throw new Error("Failed to fetch post.");
   }
 }
-
-/**
- * 退会画面で見せる「消えるもの」の数
- */
-export async function fetchMyActivityCounts() {
-  const session = await auth();
-  if (!session?.user?.email) throw new Error("Invalid Request");
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: session.user.email },
-    select: { _count: { select: { posts: true, comments: true } } },
-  });
-  return { postCount: user._count.posts, commentCount: user._count.comments };
-}

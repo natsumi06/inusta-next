@@ -4,7 +4,7 @@
  * 設定 › 会員情報の Server Actions
  * - changeEmail: メールアドレス変更（いまのパスワードで本人確認）
  * - changePassword: パスワード変更（いまのパスワードで本人確認）
- * - deleteAccount: 退会（いまのパスワードで本人確認。投稿・コメント・プロフィールを消す）
+ * - deleteAccount: 退会（投稿・コメント・プロフィールを消す）
  */
 
 import { z } from "zod";
@@ -126,18 +126,12 @@ function isBlobUrl(url: string) {
   }
 }
 
-export async function deleteAccount(
-  _state: AccountFormState,
-  formData: FormData,
-): Promise<AccountFormState> {
-  const currentPassword = String(formData.get("currentPassword") ?? "");
-  if (!currentPassword) {
-    return { errors: { currentPassword: ["パスワードを入力してください。"] } };
-  }
-  const { user, matches } = await verifyCurrentUser(currentPassword);
-  if (!matches) {
-    return { errors: { currentPassword: ["パスワードが正しくありません。"] } };
-  }
+export async function deleteAccount() {
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) redirect("/login");
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) redirect("/login");
 
   const posts = await prisma.post.findMany({
     where: { userId: user.id },

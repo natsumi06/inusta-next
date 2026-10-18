@@ -42,8 +42,18 @@
   --animate-yuru-sheet-down: yuru-sheet-down var(--duration-yuru) ease-in both;
   /* 読み込み中の箱: ゆっくり明るさが行き来する */
   --animate-yuru-pulse: yuru-pulse 2s var(--ease-yuru) infinite;
+  --animate-yuru-bob: yuru-bob 3.2s ease-in-out infinite;
 
   /* 上からふわっと降りてきて、少し沈んでから止まる */
+  @keyframes yuru-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
   @keyframes yuru-drop-in {
     0% {
       opacity: 0;

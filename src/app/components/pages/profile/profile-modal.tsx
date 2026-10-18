@@ -114,10 +114,15 @@ export function ProfileModalActions({
   pending,
   disabled,
   sticky = false,
+  submitLabel = "保存する",
+  pendingLabel = "保存しています…",
 }: {
   onCancel: () => void;
   pending: boolean;
   disabled?: boolean;
+  /** 主ボタンの文字（投稿作成では「投稿する」） */
+  submitLabel?: string;
+  pendingLabel?: string;
   /** 下に固定する（全画面のときに、スクロールしても保存ボタンが見えるように） */
   sticky?: boolean;
 }) {
@@ -141,7 +146,7 @@ export function ProfileModalActions({
         disabled={pending || disabled}
         className="h-[52px] w-full rounded-full bg-ink px-8 text-[16px] font-bold text-white shadow-cheek transition enabled:hover:translate-y-px enabled:hover:shadow-none disabled:opacity-40 sm:h-12 sm:w-auto sm:text-[15px]"
       >
-        {pending ? "保存しています…" : "保存する"}
+        {pending ? pendingLabel : submitLabel}
       </button>
     </div>
   );

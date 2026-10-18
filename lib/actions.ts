@@ -418,49 +418,64 @@ export async function updateProfile(
   return { ok: true };
 }
 
+export type PostCreateState = {
+  errors?: { image?: string[]; caption?: string[] };
+  message?: string | null;
+  /** 投稿できたら、その投稿の id（画面側で投稿の詳細へ進む） */
+  postId?: string;
+};
+
+const CAPTION_MAX_LENGTH = 500;
+
 /**
  * 投稿作成（画像アップロードあり）
- * 画像を Blob にアップ → 投稿保存 → マイページ再検証 → マイページへ遷移
+ * 画像を Blob にアップ → 投稿保存 → 一覧を再検証 → 投稿の id を返す（詳細へは画面側で進む）
  */
-export async function createPost(formData: FormData) {
-  const session = await auth();
-  const email = session?.user?.email || "";
-  const caption = formData.get("caption") as string;
+export async function createPost(
+  _state: PostCreateState,
+  formData: FormData,
+): Promise<PostCreateState> {
+  const email = await requireEmail();
+  const caption = ((formData.get("caption") as string) ?? "").trim();
   const imageFile = formData.get("image");
 
   if (!(imageFile instanceof File) || imageFile.size === 0) {
-    throw new Error("画像を選択してください");
+    return { errors: { image: ["写真を選んでください。"] } };
   }
-
   if (!ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
-    throw new Error("対応する形式：JPEG, PNG, WebP, GIF");
+    return { errors: { image: ["対応する形式：JPEG, PNG, WebP, GIF"] } };
   }
-
   if (imageFile.size > MAX_IMAGE_SIZE) {
-    throw new Error("ファイルサイズは5MB以下にしてください");
+    return { errors: { image: ["写真は5MB以下にしてください。"] } };
+  }
+  if (caption.length > CAPTION_MAX_LENGTH) {
+    return { errors: { caption: ["ひとことは500文字以内にしてください。"] } };
   }
 
-  const blob = await put(imageFile.name, imageFile, {
-    access: "public",
-    allowOverwrite: true,
-  });
+  const user = await prisma.user.findFirstOrThrow({ where: { email } });
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: { email },
-  });
+  let imageUrl: string;
+  try {
+    const blob = await put(imageFile.name, imageFile, {
+      access: "public",
+      allowOverwrite: true,
+    });
+    imageUrl = blob.url;
+  } catch (error) {
+    console.error("Failed to upload image:", error);
+    return {
+      message: "写真をアップロードできませんでした。もう一度お試しください。",
+    };
+  }
 
   const post = await prisma.post.create({
-    data: {
-      caption,
-      image: blob.url,
-      userId: user.id,
-    },
+    data: { caption, image: imageUrl, userId: user.id },
   });
 
   revalidatePath("/mypage");
   revalidatePath("/home");
   revalidatePath("/users");
-  redirect(`/posts/${post.id}`);
+  return { postId: post.id };
 }
 
 /**

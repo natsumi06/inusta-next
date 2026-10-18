@@ -25,8 +25,8 @@ export async function createPost(
   const testImagePath = imagePath || getTestImagePath();
   await fileInput.setInputFiles(testImagePath);
 
-  // 画像がアップロードされるまで待機
-  await page.locator('text=アップロード準備完了').waitFor({ timeout: 10000 });
+  // 選んだ写真のプレビューが出るまで待機
+  await page.locator('img[alt="選んだ写真"]').waitFor({ timeout: 10000 });
 
   // キャプション入力フィールドが表示されるまで待機
   const captionInput = page.locator('textarea[name="caption"]');
@@ -34,12 +34,12 @@ export async function createPost(
   await captionInput.fill(caption);
 
   // 投稿ボタンをクリック
-  const submitButton = page.locator('button:has-text("公開する")');
+  const submitButton = page.locator('button:has-text("投稿する")');
   await submitButton.waitFor({ state: 'visible', timeout: 5000 });
   await submitButton.click();
 
   // 投稿詳細ページにリダイレクトされるまで待機
-  await page.waitForURL(/\/posts\/[^/]+/, { timeout: 15000 });
+  await page.waitForURL(/\/posts\/(?!new$)[^/]+$/, { timeout: 15000 });
 
   // 投稿詳細ページで投稿内容が表示されるまで待機
   await expect(page.locator(`text=${caption}`)).toBeVisible({ timeout: 10000 });

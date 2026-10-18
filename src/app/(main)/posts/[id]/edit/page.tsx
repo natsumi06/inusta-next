@@ -16,7 +16,7 @@ export default async function Page({ params }: PageProps) {
   const updatePostWithId = updatePost.bind(null, id);
   return (
     <>
-      <BreadCrumbs title="投稿編集 🐾" />
+      <BreadCrumbs title="投稿編集" />
       <div className="mx-auto max-w-5xl">
         <div className="mt-8 grid grid-cols-1 gap-1 bg-white md:grid-cols-2">
           <Image

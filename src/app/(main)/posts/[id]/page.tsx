@@ -16,7 +16,7 @@ export default async function Page({ params }: PageProps) {
   const createCommentWithPostId = createComment.bind(null, id);
   return (
     <>
-      <BreadCrumbs title="投稿詳細 🐾" />
+      <BreadCrumbs title="投稿詳細" />
       <div className="mx-auto max-w-5xl">
         <div className="mt-8 grid grid-cols-1 gap-1 bg-white md:grid-cols-2">
           <Image

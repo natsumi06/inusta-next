@@ -6,7 +6,7 @@ export default async function Users() {
   const users = await fetchLatestUsers();
   return (
     <>
-      <BreadCrumbs title="ユーザー一覧 🐾" />
+      <BreadCrumbs title="ユーザー一覧" description="愛犬家のみなさん" />
       <UsersList users={users} />
     </>
   );

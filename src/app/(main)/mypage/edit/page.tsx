@@ -6,7 +6,7 @@ export default async function Page() {
   const user = await fetchMe();
   return (
     <>
-      <BreadCrumbs title="プロフィール編集 🐾" />
+      <BreadCrumbs title="プロフィール編集" />
       <div className="mx-auto mt-8 max-w-5xl bg-white p-4">
         <header>
           <h2 className="text-lg font-medium text-gray-900">アカウント情報</h2>

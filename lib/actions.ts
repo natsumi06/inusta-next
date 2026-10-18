@@ -6,6 +6,7 @@ import { AuthError } from "next-auth";
 /**
  * Server Actions
  * - registerUser: 会員登録（重複チェック・bcryptハッシュ）
+ * - setupProfile: 会員登録後のプロフィール設定
  * - updatePost: 投稿編集（本人の投稿のみ）
  * - deletePost: 投稿削除（本人の投稿のみ）
  * - createComment: コメント作成（投稿存在チェック）
@@ -127,9 +128,55 @@ export async function registerUser(
   await signIn("credentials", {
     email,
     password,
-    redirectTo: "/register/complete",
+    redirectTo: "/register/profile",
   });
 
+  redirect("/register/profile");
+}
+
+type SetupProfileState = {
+  message?: string | null;
+};
+
+/**
+ * 会員登録の2ステップ目: プロフィール設定（表示名・ひとこと・アイコン）
+ * 保存後は準備完了画面へ
+ */
+export async function setupProfile(
+  _state: SetupProfileState,
+  formData: FormData
+): Promise<SetupProfileState> {
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) redirect("/login");
+
+  const name = ((formData.get("name") as string) ?? "").trim();
+  if (!name) return { message: "表示名を入力してください。" };
+
+  const data: { name: string; description: string; image?: string } = {
+    name,
+    description: ((formData.get("description") as string) ?? "").trim(),
+  };
+
+  const imageFile = formData.get("image") as File | null;
+  if (imageFile && imageFile.size > 0) {
+    if (!ALLOWED_IMAGE_TYPES.includes(imageFile.type)) {
+      return { message: "対応する形式：JPEG, PNG, WebP, GIF" };
+    }
+    if (imageFile.size > MAX_IMAGE_SIZE) {
+      return { message: "画像は5MB以下にしてください。" };
+    }
+    const blob = await put(imageFile.name, imageFile, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+    data.image = blob.url;
+  }
+
+  await prisma.user.update({ where: { email }, data });
+
+  revalidatePath("/users");
+  revalidatePath("/mypage");
   redirect("/register/complete");
 }
 

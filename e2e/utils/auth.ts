@@ -31,7 +31,9 @@ export async function registerAndLogin(
   const submitButton = page.locator('button[type="submit"]').first();
   await submitButton.click();
 
-  // 登録完了ページまで待機
+  // プロフィール設定ページまで待機し、「あとで設定する」で準備完了ページへ
+  await page.waitForURL('/register/profile', { timeout: 15000 });
+  await page.getByRole('link', { name: 'あとで設定する' }).click();
   await page.waitForURL('/register/complete', { timeout: 15000 });
 
   // 準備完了画面の「みんなの投稿を見る」をクリック

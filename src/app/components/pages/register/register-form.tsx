@@ -46,12 +46,12 @@ export default function RegisterForm() {
           新規登録
         </h1>
         <Image
-          src="/illustrations/dog-sit.png"
+          src="/illustrations/signup-sit.png"
           alt=""
           aria-hidden="true"
-          width={165}
-          height={155}
-          className="h-auto w-[84px] mix-blend-multiply sm:w-[92px]"
+          width={453}
+          height={480}
+          className="h-auto w-[84px] sm:w-[92px]"
         />
       </div>
       <div className="flex flex-col gap-[18px] rounded-[20px] border border-line bg-white px-5 py-6 sm:gap-5 sm:border-0 sm:p-0">

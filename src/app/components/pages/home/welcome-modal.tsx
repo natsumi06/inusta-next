@@ -67,11 +67,11 @@ export default function WelcomeModal() {
         </svg>
       </button>
       <Image
-        src="/illustrations/dog-house.png"
+        src="/illustrations/welcome-house.png"
         alt=""
         aria-hidden="true"
-        width={700}
-        height={466}
+        width={640}
+        height={534}
         priority
         className="mx-auto h-auto w-52 sm:w-60"
       />

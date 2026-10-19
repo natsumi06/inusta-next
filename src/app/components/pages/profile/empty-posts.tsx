@@ -11,11 +11,11 @@ export default function EmptyPosts({
       <Image
         src="/illustrations/dog-sleep.png"
         alt=""
-        width={700}
-        height={466}
-        className="h-auto w-40 sm:w-44"
+        width={640}
+        height={327}
+        className="h-auto w-28 sm:w-36"
       />
-      <p className="mt-1 font-heading text-lg font-medium text-ink sm:text-xl">
+      <p className="mt-3 font-heading text-lg font-medium text-ink sm:text-xl">
         まだ投稿がありません
       </p>
       {children}

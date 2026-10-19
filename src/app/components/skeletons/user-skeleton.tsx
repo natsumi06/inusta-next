@@ -1,61 +1,29 @@
-function Profile() {
-  return (
-    <div
-      role="status"
-      className="animate-pulse space-y-8 md:flex md:items-center md:space-x-8 md:space-y-0 rtl:space-x-reverse"
-    >
-      <div className="flex aspect-[1/1] h-24 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
-        <svg
-          className="size-10 text-gray-200 dark:text-gray-600"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 18"
-        >
-          <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-        </svg>
-      </div>
-      <div className="w-full">
-        <div className="mb-5 h-2.5 w-48 rounded-full bg-gray-200"></div>
-        <div className="mb-2.5 h-2 rounded-full bg-gray-200"></div>
-        <div className="mb-2.5 h-2 max-w-[440px] rounded-full bg-gray-200"></div>
-        <div className="h-2 max-w-[460px] rounded-full bg-gray-200"></div>
-      </div>
-      <span className="sr-only">Loading...</span>
-    </div>
-  );
-}
+import { PawIcon } from "./paw-icon";
 
-function Post() {
-  return (
-    <div className="flex aspect-[1/1] animate-pulse items-center justify-center bg-gray-300 dark:bg-gray-700">
-      <svg
-        className="size-10 text-gray-200 dark:text-gray-600"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="currentColor"
-        viewBox="0 0 20 18"
-      >
-        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-      </svg>
-    </div>
-  );
-}
-
+/** マイページ・わんとものページの読み込み中。プロフィールと投稿の並びと同じ形の箱 */
 export default function UserSkeleton() {
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mt-8 flex bg-white p-4">
-        <Profile />
+    <div role="status" className="mx-auto max-w-5xl sm:px-6">
+      <div className="h-11 sm:h-[60px]" />
+      <div className="flex animate-yuru-pulse items-center gap-4 border-y border-line bg-white px-4 py-5 sm:gap-7 sm:rounded-2xl sm:border sm:px-8 sm:py-7">
+        <span className="size-20 shrink-0 rounded-full bg-soft sm:size-28" />
+        <div className="flex flex-1 flex-col gap-3">
+          <span className="h-4 w-36 rounded-full bg-soft sm:w-44" />
+          <span className="h-2.5 w-[70%] rounded-full bg-soft" />
+          <span className="h-2.5 w-1/2 rounded-full bg-soft" />
+        </div>
       </div>
-      <div className="my-8 grid grid-cols-3 gap-1 bg-white">
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+      <div className="grid animate-yuru-pulse grid-cols-3 gap-0.5 pb-8 pt-5 sm:gap-2">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div
+            key={i}
+            className="flex aspect-square items-center justify-center bg-soft sm:rounded-xl"
+          >
+            <PawIcon className="size-8 text-line sm:size-10" />
+          </div>
+        ))}
       </div>
+      <span className="sr-only">読み込み中</span>
     </div>
   );
 }

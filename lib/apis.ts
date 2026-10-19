@@ -119,9 +119,10 @@ export async function fetchLatestUsers() {
   }
 }
 
+/** 見つからなければ null（画面は 404 を出す） */
 export async function fetchUser(id: string) {
   try {
-    return await prisma.user.findFirstOrThrow({
+    return await prisma.user.findFirst({
       select: {
         id: true,
         name: true,
@@ -163,9 +164,10 @@ export async function fetchMe() {
   }
 }
 
+/** 見つからなければ null（画面は 404 を出す） */
 export async function fetchPostwithComments(id: string) {
   try {
-    return await prisma.post.findFirstOrThrow({
+    return await prisma.post.findFirst({
       where: { id },
       select: {
         id: true,

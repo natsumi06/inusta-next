@@ -2,7 +2,7 @@ import BreadCrumbs from "@/app/components/layouts/bread-crumbs";
 import { fetchUser } from "./../../../../../lib/apis";
 import { auth } from "./../../../../../auth";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import UserSkeleton from "@/app/components/skeletons/user-skeleton";
 import ProfileAvatar from "@/app/components/pages/profile/profile-avatar";
@@ -28,6 +28,7 @@ export default function Page({ params }: PageProps) {
 async function UserDetail({ params }: PageProps) {
   const { id } = await params;
   const [user, session] = await Promise.all([fetchUser(id), auth()]);
+  if (!user) notFound();
 
   // 自分のページは2種類にせず、マイページに集める
   if (session?.user?.email && session.user.email === user.email) {

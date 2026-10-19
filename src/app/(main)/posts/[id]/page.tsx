@@ -4,6 +4,7 @@ import { ChevronLeftIcon } from "@/app/components/layouts/navigation-icons";
 import PostMenu from "@/app/components/pages/posts/post-menu";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { fetchPostwithComments, fetchMe } from "./../../../../../lib/apis";
 import { createComment } from "./../../../../../lib/actions";
 import { getRelativeTime } from "./../../../../../lib/relative-time";
@@ -15,6 +16,7 @@ type PageProps = {
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
   const post = await fetchPostwithComments(id);
+  if (!post) notFound();
   const currentUser = await fetchMe().catch(() => null);
   const isOwner = currentUser && post.user.email === currentUser.email;
   const createCommentWithPostId = createComment.bind(null, id);

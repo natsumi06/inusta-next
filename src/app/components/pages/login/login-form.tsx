@@ -28,12 +28,12 @@ export default function LoginForm() {
           ログイン
         </h1>
         <Image
-          src="/illustrations/dog-sit.png"
+          src="/illustrations/login-pup.png"
           alt=""
           aria-hidden="true"
-          width={165}
-          height={155}
-          className="h-auto w-[84px] mix-blend-multiply sm:w-[92px]"
+          width={480}
+          height={426}
+          className="h-auto w-[96px] sm:w-[104px]"
         />
       </div>
       <div className="flex flex-col gap-[18px] rounded-[20px] border border-line bg-white px-5 py-6 sm:gap-5 sm:border-0 sm:p-0">

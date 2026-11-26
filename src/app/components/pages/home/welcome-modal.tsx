@@ -3,28 +3,34 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { consumeWelcome } from "./../../../../../lib/actions";
-
-const SHOWN_KEY = "inusta_welcome_shown";
 
 /**
  * 会員登録後、はじめてホームに来たときだけ出る歓迎モーダル
+ * - 準備完了画面の「Start！」が /home?welcome=1 へ遷移したときだけ開く
+ * - 開いたらすぐ URL を /home に置き換えるので、戻る・リロードでは二度と出ない
  * 上からゆっくり降りてきて、閉じるとゆっくり上へ戻る（docs/design.md「動き」参照）
  */
 export default function WelcomeModal() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    // 戻るボタンでキャッシュされたホームが再表示されたときは出さない
-    if (sessionStorage.getItem(SHOWN_KEY)) return;
-    sessionStorage.setItem(SHOWN_KEY, "1");
-    dialogRef.current?.showModal();
-    // 表示した時点で印を消し、リロードしても二度と出さない
-    consumeWelcome();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("welcome") !== "1") return;
+    setIsOpen(true);
+    // 履歴の今のエントリを /home に置き換える（ページの再取得はしない）
+    window.history.replaceState(null, "", "/home");
   }, []);
 
+  useEffect(() => {
+    if (isOpen) dialogRef.current?.showModal();
+  }, [isOpen]);
+
   const close = () => setIsClosing(true);
+
+  // 対象外のときは何も描画しない（イラスト画像も読み込まない）
+  if (!isOpen) return null;
 
   return (
     <dialog

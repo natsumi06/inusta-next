@@ -12,14 +12,11 @@ import { AuthError } from "next-auth";
  * - createComment: コメント作成（投稿存在チェック）
  * - updateProfile: プロフィール編集（アイコン・表示名・自己紹介）
  * - createPost: 投稿作成（Vercel Blobへの画像アップロード込み）
- * - consumeWelcome: 歓迎モーダルの表示済み処理（印のCookieを消す）
  */
 
 import prisma from "./../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { WELCOME_COOKIE } from "./welcome";
 import { provisionalName } from "./display-name";
 import bcrypt from "bcrypt";
 import { put } from "@vercel/blob";
@@ -126,14 +123,6 @@ export async function registerUser(
   }
 
   revalidatePath("/users");
-
-  // はじめてのホームで歓迎モーダルを出すための印
-  (await cookies()).set(WELCOME_COOKIE, "1", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
 
   await signIn("credentials", {
     email,
@@ -281,13 +270,6 @@ export async function saveBio(
   revalidatePath("/users");
   revalidatePath("/mypage");
   redirect("/register/complete");
-}
-
-/**
- * 歓迎モーダルを表示したら印を消す（リロードや再訪では出さない）
- */
-export async function consumeWelcome() {
-  (await cookies()).delete(WELCOME_COOKIE);
 }
 
 export type PostUpdateState = {

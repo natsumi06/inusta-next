@@ -48,7 +48,7 @@ export async function registerAndLogin(
   await homeLink.click();
 
   // ホーム画面に移動するまで待機
-  await page.waitForURL('/home', { timeout: 15000 });
+  await page.waitForURL(/\/home(\?welcome=1)?$/, { timeout: 15000 });
 
   // はじめてのホームで出る歓迎モーダルを閉じる
   const welcome = page.getByRole('dialog', { name: 'ここがホームです' });

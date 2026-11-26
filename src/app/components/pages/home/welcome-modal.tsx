@@ -3,12 +3,11 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { consumeWelcome } from "./../../../../../lib/actions";
-
-const SHOWN_KEY = "inusta_welcome_shown";
 
 /**
  * 会員登録後、はじめてホームに来たときだけ出る歓迎モーダル
+ * - 準備完了画面の「Start！」が /home?welcome=1 へ遷移したときだけ開く
+ * - 開いたらすぐ URL を /home に置き換えるので、戻る・リロードでは二度と出ない
  * 上からゆっくり降りてきて、閉じるとゆっくり上へ戻る（docs/design.md「動き」参照）
  */
 export default function WelcomeModal() {
@@ -16,12 +15,11 @@ export default function WelcomeModal() {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    // 戻るボタンでキャッシュされたホームが再表示されたときは出さない
-    if (sessionStorage.getItem(SHOWN_KEY)) return;
-    sessionStorage.setItem(SHOWN_KEY, "1");
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("welcome") !== "1") return;
     dialogRef.current?.showModal();
-    // 表示した時点で印を消し、リロードしても二度と出さない
-    consumeWelcome();
+    // 履歴の今のエントリを /home に置き換える（ページの再取得はしない）
+    window.history.replaceState(null, "", "/home");
   }, []);
 
   const close = () => setIsClosing(true);

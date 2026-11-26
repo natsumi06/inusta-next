@@ -30,7 +30,7 @@ export default function Page() {
       </div>
       <div className="mt-auto flex flex-col gap-3 pt-2 sm:mt-1 sm:flex-row-reverse sm:items-center sm:justify-between sm:gap-4 sm:border-t sm:border-line sm:pt-6">
         <Link
-          href="/home"
+          href="/home?welcome=1"
           className="inline-flex h-[52px] items-center justify-center rounded-full bg-ink px-8 text-[16px] font-bold text-white shadow-cheek transition hover:translate-y-px hover:shadow-none sm:h-12 sm:min-w-[200px] sm:text-[15px]"
         >
           Start！

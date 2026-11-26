@@ -4,19 +4,16 @@ import { Suspense } from "react";
 import PostsWithUserSkeleton from "@/app/components/skeletons/posts-with-user-skeleton";
 import PostsList from "@/app/components/pages/posts/posts-list";
 import WelcomeModal from "@/app/components/pages/home/welcome-modal";
-import { cookies } from "next/headers";
-import { WELCOME_COOKIE } from "./../../../../lib/welcome";
 
-export default async function Page() {
-  const isFirstVisit = (await cookies()).has(WELCOME_COOKIE);
-
+export default function Page() {
   return (
     <>
       <BreadCrumbs title="ホーム" description="わんともの新着投稿" />
       <Suspense fallback={<PostsWithUserSkeleton />}>
         <Posts />
       </Suspense>
-      {isFirstVisit && <WelcomeModal />}
+      {/* 準備完了画面の「Start！」（/home?welcome=1）から来たときだけ開く */}
+      <WelcomeModal />
     </>
   );
 }

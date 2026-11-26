@@ -12,17 +12,25 @@ import clsx from "clsx";
  */
 export default function WelcomeModal() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("welcome") !== "1") return;
-    dialogRef.current?.showModal();
+    setIsOpen(true);
     // 履歴の今のエントリを /home に置き換える（ページの再取得はしない）
     window.history.replaceState(null, "", "/home");
   }, []);
 
+  useEffect(() => {
+    if (isOpen) dialogRef.current?.showModal();
+  }, [isOpen]);
+
   const close = () => setIsClosing(true);
+
+  // 対象外のときは何も描画しない（イラスト画像も読み込まない）
+  if (!isOpen) return null;
 
   return (
     <dialog
